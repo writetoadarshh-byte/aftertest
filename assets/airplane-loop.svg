@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 280" fill="none">
+  <!-- Delicate dashed looping flight trail -->
+  <path d="M 50 190 C 120 185, 170 230, 210 235 C 235 238, 255 220, 248 195 C 242 175, 222 178, 218 192 C 212 212, 235 240, 260 220 C 275 208, 280 185, 290 160 C 300 135, 315 110, 335 90" 
+        stroke="#4A3837" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 6" opacity="0.65" />
+  
+  <!-- Little heart in the loop -->
+  <path d="M 235 238 C 232 232, 224 232, 222 237 C 220 242, 224 246, 235 253 C 246 246, 250 242, 248 237 C 246 232, 238 232, 235 238 Z" 
+        fill="#B2533E" opacity="0.8" />
+
+  <!-- Folded Paper Airplane -->
+  <g transform="translate(320, 45) rotate(15)">
+    <!-- Main wing right -->
+    <polygon points="0,35 75,0 45,55" fill="#FAF6F0" stroke="#342525" stroke-width="2.2" stroke-linejoin="round" />
+    <!-- Center fold / body -->
+    <polygon points="0,35 75,0 35,42" fill="#EAE2D5" stroke="#342525" stroke-width="2.2" stroke-linejoin="round" />
+    <!-- Wing left (tucked) -->
+    <polygon points="0,35 75,0 15,30" fill="#DFD5C6" stroke="#342525" stroke-width="1.8" stroke-linejoin="round" />
+    <!-- Underbody keel -->
+    <polygon points="35,42 45,55 30,50" fill="#BFBAAB" stroke="#342525" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- Wing crease shadow -->
+    <line x1="0" y1="35" x2="75" y2="0" stroke="#342525" stroke-width="2.4" stroke-linecap="round" />
+  </g>
+</svg>
