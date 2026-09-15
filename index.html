@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AfterTest — Find the gap. Drill it. Retest it.</title>
+  <meta name="description" content="AfterTest, a Focus Lab Academy company. Test A finds each child's weak topics, a personalised practice sheet drills them, and Test B retests them with new questions.">
+  <meta name="theme-color" content="#F4EFEA">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a href="#top" class="brand" aria-label="AfterTest by Focus Lab Academy. Back to top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke-linecap="round" stroke-linejoin="round"><path class="logo-ring" d="M24.66 14.41A10 10 0 1 1 20 8.34"/><path class="logo-tick" d="M10.5 17l3.5 3.5L27 6"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-line"><span class="brand-name">After<span class="brand-accent">Test</span></span><span class="brand-by">by Focus Lab Academy</span></span>
+          <span class="brand-tagline">Find the gap. Drill it. Retest it.</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Page sections">
+        <a href="#tests">Test A &amp; B</a>
+        <a href="#how">Example</a>
+        <a href="#portal">Parent portal</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="container">
+        <p class="eyebrow">Every subject · Every chapter</p>
+        <h1>Turn <span class="h-wrong">wrong answers</span> into <span class="h-strong">strong topics</span>.</h1>
+        <p class="lead">After each test, we find your child's weak topics, give practice on just those, then test them again.</p>
+        <div class="hero-cta">
+          <a href="#tests" class="btn btn-dark">How it works</a>
+          <a href="#how" class="btn btn-ghost">See an example</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Test A, personalised practice, Test B, and the comparison -->
+    <section class="tests" id="tests">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Test A and Test B</p>
+          <h2>Two tests. One comparison.</h2>
+        </div>
+
+        <div class="pair">
+          <article class="pair-card">
+            <span class="pair-badge badge-a">1 · Test A</span>
+            <p class="pair-who">Same paper for the whole class</p>
+            <h3>Finds the weak topics</h3>
+            <p>Every topic in the chapter is tested, so no gap stays hidden.</p>
+          </article>
+          <div class="pair-link"><span class="pair-arrow" aria-hidden="true">→</span><span class="pair-note">Report card + class</span></div>
+          <article class="pair-card">
+            <span class="pair-badge badge-p">2 · Practice sheet</span>
+            <p class="pair-who">Made for each child</p>
+            <h3>Drills only those topics</h3>
+            <p>New questions at a similar level. Nothing your child already knows.</p>
+          </article>
+          <div class="pair-link"><span class="pair-arrow" aria-hidden="true">→</span><span class="pair-note">Then</span></div>
+          <article class="pair-card">
+            <span class="pair-badge badge-b">3 · Test B</span>
+            <p class="pair-who">Made for each child</p>
+            <h3>Retests the same topics</h3>
+            <p>With questions never seen before, not in Test A and not in practice.</p>
+          </article>
+        </div>
+
+        <div class="pair-down" aria-hidden="true"></div>
+
+        <div class="result">
+          <div class="result-copy">
+            <span class="pair-badge badge-r">4 · The result</span>
+            <h3>Test A vs Test B, topic by topic.</h3>
+            <p>Parents see what was weak, what improved and what still needs work.</p>
+            <p class="result-note">Real counts, never a vague percentage. A few questions are a signal, not a final grade.</p>
+          </div>
+
+          <div class="result-report">
+            <div class="paper-head"><strong>Aarav · Class 10 Maths · Quadratic equations</strong><span class="tag">Example</span></div>
+            <div class="result-table" role="table" aria-label="Aarav's weak topics: Test A and Test B scores">
+              <div class="result-row result-headrow" role="row">
+                <span role="columnheader">Weak in Test A</span>
+                <span role="columnheader">Test A</span>
+                <span role="columnheader">Test B</span>
+                <span role="columnheader">Result</span>
+              </div>
+              <div class="result-row" role="row">
+                <span class="result-topic" role="cell">Splitting the middle term</span>
+                <span class="result-score score-a" role="cell" data-label="A"><span class="dots" aria-hidden="true"><i class="dot"></i><i class="dot"></i></span>0/2</span>
+                <span class="result-score score-b full" role="cell" data-label="B"><span class="dots" aria-hidden="true"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i></span>3/3</span>
+                <span class="result-pill" role="cell"><span class="pill pill-up">Improved</span></span>
+              </div>
+              <div class="result-row" role="row">
+                <span class="result-topic" role="cell">Quadratic formula</span>
+                <span class="result-score score-a" role="cell" data-label="A"><span class="dots" aria-hidden="true"><i class="dot on"></i><i class="dot"></i></span>1/2</span>
+                <span class="result-score score-b full" role="cell" data-label="B"><span class="dots" aria-hidden="true"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i></span>3/3</span>
+                <span class="result-pill" role="cell"><span class="pill pill-up">Improved</span></span>
+              </div>
+              <div class="result-row" role="row">
+                <span class="result-topic" role="cell">Word problems</span>
+                <span class="result-score score-a" role="cell" data-label="A"><span class="dots" aria-hidden="true"><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span>1/3</span>
+                <span class="result-score score-b" role="cell" data-label="B"><span class="dots" aria-hidden="true"><i class="dot on"></i><i class="dot"></i><i class="dot"></i></span>1/3</span>
+                <span class="result-pill" role="cell"><span class="pill pill-weak">Still weak</span></span>
+              </div>
+            </div>
+            <p class="result-summary"><b>2 of 3 weak topics improved.</b> Word problems: the teacher follows up.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- One example student through every step -->
+    <section class="how" id="how">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Example</p>
+          <h2>Follow one weak topic, step by step.</h2>
+        </div>
+
+        <div class="sim" id="sim">
+          <div class="sim-top">
+            <div class="subject-switch" role="radiogroup" aria-label="Example subject">
+              <button type="button" role="radio" aria-checked="true" data-subject="maths">Maths</button>
+              <button type="button" role="radio" aria-checked="false" data-subject="physics" tabindex="-1">Physics</button>
+              <button type="button" role="radio" aria-checked="false" data-subject="chemistry" tabindex="-1">Chemistry</button>
+              <button type="button" role="radio" aria-checked="false" data-subject="biology" tabindex="-1">Biology</button>
+            </div>
+            <p class="sim-who" id="simWho"></p>
+          </div>
+
+          <ol class="rail" role="tablist" aria-label="The five steps">
+            <li role="presentation"><button type="button" role="tab" id="simTab0" aria-controls="simPanel"><span class="rail-dot">1</span><span class="rail-name">Test A</span><span class="rail-verb">Diagnose</span></button></li>
+            <li role="presentation"><button type="button" role="tab" id="simTab1" aria-controls="simPanel"><span class="rail-dot">2</span><span class="rail-name">Report</span><span class="rail-verb">Tell</span></button></li>
+            <li role="presentation"><button type="button" role="tab" id="simTab2" aria-controls="simPanel"><span class="rail-dot">3</span><span class="rail-name">Class</span><span class="rail-verb">Teach</span></button></li>
+            <li role="presentation"><button type="button" role="tab" id="simTab3" aria-controls="simPanel"><span class="rail-dot">4</span><span class="rail-name">Practice</span><span class="rail-verb">Drill</span></button></li>
+            <li role="presentation"><button type="button" role="tab" id="simTab4" aria-controls="simPanel"><span class="rail-dot">5</span><span class="rail-name">Test B</span><span class="rail-verb">Retest</span></button></li>
+          </ol>
+
+          <div class="sim-body" id="simPanel" role="tabpanel" aria-labelledby="simTab0">
+            <div class="sim-copy">
+              <p class="sim-count" id="simCount"></p>
+              <h3 id="simTitle"></h3>
+              <p class="sim-line" id="simLine"></p>
+            </div>
+            <div class="sim-nav">
+              <button type="button" class="btn btn-ghost btn-sm" id="simPrev">← Back</button>
+              <button type="button" class="btn btn-dark btn-sm" id="simNext">Next</button>
+            </div>
+            <div class="sim-stage" id="simStage"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parent portal preview -->
+    <section class="portal" id="portal">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Parent portal</p>
+          <h2>Every chapter, every topic, in one place.</h2>
+          <p class="section-sub">See each chapter's progress: what was weak, what improved and what comes next.</p>
+        </div>
+
+        <div class="portal-frame">
+          <div class="portal-bar">
+            <span class="portal-brand">
+              <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" width="24" height="24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path class="logo-ring" d="M24.66 14.41A10 10 0 1 1 20 8.34"/><path class="logo-tick" d="M10.5 17l3.5 3.5L27 6"/></svg></span>
+              <strong>Parent portal</strong>
+            </span>
+            <span class="portal-child">Aarav · Class 10</span>
+            <span class="tag">Example</span>
+          </div>
+
+          <div class="portal-body">
+            <div class="portal-main">
+              <div class="portal-stats">
+                <div class="stat"><b>4</b><span>Chapters followed</span></div>
+                <div class="stat"><b>10</b><span>Weak topics found</span></div>
+                <div class="stat good"><b>4</b><span>Improved in Test B</span></div>
+              </div>
+
+              <p class="portal-label">Chapters</p>
+              <ul class="chapters">
+                <li class="chapter">
+                  <p class="chapter-name"><b>Quadratic equations</b><span>Maths</span></p>
+                  <ol class="loop-mini" aria-label="Test A, practice and Test B done"><li class="done">Test A</li><li class="done">Practice</li><li class="done">Test B</li></ol>
+                  <span class="pill pill-up">2 of 3 improved</span>
+                </li>
+                <li class="chapter">
+                  <p class="chapter-name"><b>Chemical reactions</b><span>Chemistry</span></p>
+                  <ol class="loop-mini" aria-label="Test A, practice and Test B done"><li class="done">Test A</li><li class="done">Practice</li><li class="done">Test B</li></ol>
+                  <span class="pill pill-up">2 of 2 improved</span>
+                </li>
+                <li class="chapter">
+                  <p class="chapter-name"><b>Light: reflection</b><span>Physics</span></p>
+                  <ol class="loop-mini" aria-label="Test A and practice done, Test B next"><li class="done">Test A</li><li class="done">Practice</li><li class="now">Test B</li></ol>
+                  <span class="pill pill-neutral">Test B on Friday</span>
+                </li>
+                <li class="chapter">
+                  <p class="chapter-name"><b>Life processes</b><span>Biology</span></p>
+                  <ol class="loop-mini" aria-label="Test A done, practice now"><li class="done">Test A</li><li class="now">Practice</li><li>Test B</li></ol>
+                  <span class="pill pill-neutral">Practice sheet ready</span>
+                </li>
+              </ul>
+            </div>
+
+            <aside class="portal-side">
+              <p class="portal-label">Next up</p>
+              <div class="next-card"><b>Test B · Light: reflection</b><span>Friday · 2 weak topics</span></div>
+
+              <p class="portal-label">Report cards</p>
+              <ul class="cards-list">
+                <li><span>Chemical reactions · Test B</span><b>2 of 2 improved</b></li>
+                <li><span>Quadratic equations · Test B</span><b>2 of 3 improved</b></li>
+                <li><span>Light: reflection · Test A</span><b>2 weak topics</b></li>
+                <li><span>Life processes · Test A</span><b>3 weak topics</b></li>
+              </ul>
+            </aside>
+          </div>
+        </div>
+
+        <p class="portal-cta"><a class="btn btn-dark" href="https://focuslabacademy.in/portal/login" target="_blank" rel="noopener">Sign in to the parent portal ↗</a></p>
+      </div>
+    </section>
+
+    <!-- Rules -->
+    <section class="rules-section" id="rules">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Our promise</p>
+          <h2>Three rules we don't break</h2>
+        </div>
+        <ul class="rules">
+          <li class="rule">
+            <span class="rule-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span>
+            <h4>No repeats</h4>
+            <p>A question your child has seen won't come back before Test B. Test B checks understanding, not memory.</p>
+          </li>
+          <li class="rule">
+            <span class="rule-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></span>
+            <h4>No filler</h4>
+            <p>Thousands of questions, carefully picked. Only ones on your child's weak topics make the sheet.</p>
+          </li>
+          <li class="rule">
+            <span class="rule-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h4>No guessing</h4>
+            <p>If an answer or a question is in doubt, a teacher checks it. Nothing is guessed.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">FAQ</p>
+          <h2>Questions parents ask</h2>
+        </div>
+        <div class="faq">
+          <details open>
+            <summary>How does AfterTest know which topics are weak?</summary>
+            <p>Every Test A question is tagged with one topic and a difficulty level. Wrong answers are grouped by topic, so the report card names the exact topics to work on, not just the marks lost.</p>
+          </details>
+          <details>
+            <summary>Will two children in the same class get the same practice sheet?</summary>
+            <p>Usually not. Each sheet has new questions on that child's own weak topics, at a similar level. Topics they already got right are left out.</p>
+          </details>
+          <details>
+            <summary>Is Test B the same for every child?</summary>
+            <p>No. Each child's Test B covers only their weak topics from Test A, with questions they have not seen in Test A or in practice.</p>
+          </details>
+          <details>
+            <summary>What if a topic is still weak after Test B?</summary>
+            <p>The report card marks it "Still weak" and the teacher takes it up again with your child.</p>
+          </details>
+          <details>
+            <summary>Does a good Test B score mean the topic is mastered?</summary>
+            <p>It is strong evidence, not a guarantee. You see real counts, like 0/2 in Test A and 3/3 in Test B, never a vague percentage.</p>
+          </details>
+          <details>
+            <summary>Who is it for?</summary>
+            <p>Students of Physics, Chemistry, Maths and Biology, in CBSE, ICSE and IB schools and preparing for JEE and NEET.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing -->
+    <section class="closing" id="about">
+      <div class="container">
+        <div class="closing-card">
+          <svg class="closing-logo" viewBox="0 0 32 32" width="64" height="64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="logo-ring" d="M24.66 14.41A10 10 0 1 1 20 8.34"/><path class="logo-tick" d="M10.5 17l3.5 3.5L27 6"/></svg>
+          <h2>Find the gap. Drill it. Retest it.</h2>
+          <p>AfterTest is a Focus Lab Academy company.</p>
+          <div class="closing-actions">
+            <a class="btn btn-whatsapp" href="https://wa.me/919279009342?text=Hi%20Focus%20Lab%20Academy%2C%20I%27d%20like%20to%20know%20more%20about%20AfterTest." target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+              Chat on WhatsApp
+            </a>
+            <a class="btn btn-outline-light" href="tel:+919279009342">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              +91 92790 09342
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <p class="footer-brand">
+            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" width="27" height="27" fill="none" stroke-linecap="round" stroke-linejoin="round"><path class="logo-ring" d="M24.66 14.41A10 10 0 1 1 20 8.34"/><path class="logo-tick" d="M10.5 17l3.5 3.5L27 6"/></svg></span>
+            <strong>AfterTest</strong>
+          </p>
+          <p>Find the gap. Drill it. Retest it.</p>
+          <p class="footer-muted">A Focus Lab Academy company</p>
+        </div>
+
+        <div>
+          <p class="footer-label">Visit</p>
+          <address>
+            Focus Lab Academy<br>
+            Plot No. 85P, Opposite Bharti International Convent School<br>
+            Sector 56, Gurugram, Haryana 122011
+          </address>
+          <a class="footer-link" href="https://maps.google.com/?q=Focus+Lab+Academy+Sector+56+Gurugram" target="_blank" rel="noopener">Open in Maps ↗</a>
+        </div>
+
+        <div>
+          <p class="footer-label">Reach us</p>
+          <div class="footer-links">
+            <a class="footer-link" href="tel:+919279009342">+91 92790 09342</a>
+            <a class="footer-link" href="https://wa.me/919279009342?text=Hi%20Focus%20Lab%20Academy%2C%20I%27d%20like%20to%20know%20more%20about%20AfterTest." target="_blank" rel="noopener">WhatsApp</a>
+            <a class="footer-link" href="mailto:enquiry@focuslabacademy.in">enquiry@focuslabacademy.in</a>
+          </div>
+        </div>
+      </div>
+
+      <p class="footer-bottom">aftertest.in · A Focus Lab Academy company · Gurugram</p>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp button: Focus Lab Academy's number as published on focuslabacademy.in -->
+  <a class="wa-float" href="https://wa.me/919279009342?text=Hi%20Focus%20Lab%20Academy%2C%20I%27d%20like%20to%20know%20more%20about%20AfterTest." target="_blank" rel="noopener" aria-label="Chat with Focus Lab Academy on WhatsApp">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+    <span class="wa-float-label">Chat with us</span>
+  </a>
+</body>
+</html>

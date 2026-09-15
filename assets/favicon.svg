@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#3B2C2C"/>
+  <!-- A ring with a gap and a tick passing through it: find the gap, fix it -->
+  <g transform="translate(4.8 4.8) scale(1.7)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24.66 14.41A10 10 0 1 1 20 8.34" stroke="#FBF8F3" stroke-width="3"/>
+    <path d="M10.5 17l3.5 3.5L27 6" stroke="#A8E0C0" stroke-width="3.4"/>
+  </g>
+</svg>
