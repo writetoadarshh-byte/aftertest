@@ -1,25 +1,141 @@
 /**
- * aftertest.in — five-step walkthrough.
- * One example student per subject. The first weak topic in each report is
- * followed through every step, so each screen shows the same case moving on.
+ * aftertest.in — behaviour and motion.
+ * 1. Nav menu, anchors, FAQ (work with or without motion).
+ * 2. The five-step walkthrough (one example student per subject; every worked
+ *    answer below has been checked: practice and Test B items test only the
+ *    followed topic, and none repeats a Test A question).
+ * 3. Motion (only under prefers-reduced-motion: no-preference): Lenis smooth
+ *    scroll, GSAP + ScrollTrigger reveals, the pinned Test A → practice → Test B
+ *    story, count-ups, the hero wordmark and card.
  */
 
 (function () {
   'use strict';
 
-  const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
-  const ICON_NO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  const $ = (id) => document.getElementById(id);
+  const qs = (sel, root) => (root || document).querySelector(sel);
+  const qsa = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+  const html = document.documentElement;
+  const hasGsap = typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
+  const motionOK = html.classList.contains('motion') && hasGsap;
+  if (motionOK) window.__aftertestMotion = true; else html.classList.remove('motion');
+
+  /* ---------------------------------------------------------------------
+     Wordmarks: fit "AfterTest" to the full container width
+     --------------------------------------------------------------------- */
+
+  function fitWordmarks() {
+    const wm = $('wordmark');
+    if (!wm) return;
+    const clip = wm.parentElement;
+    const available = clip.clientWidth;
+    if (!available) return;
+    wm.style.fontSize = '100px';
+    const range = document.createRange();
+    range.selectNodeContents(wm);
+    const natural = range.getBoundingClientRect().width;
+    if (!natural) { wm.style.fontSize = ''; return; }
+    const size = Math.max(40, Math.min(360, (available / natural) * 100 * 0.985));
+    html.style.setProperty('--wm-size', size.toFixed(2) + 'px');
+    wm.style.fontSize = '';
+  }
+
+  /* ---------------------------------------------------------------------
+     Nav: mobile menu, dark/light state, anchor scrolling
+     --------------------------------------------------------------------- */
+
+  let lenis = null;
+
+  function scrollToHash(hash, fast) {
+    const target = hash === '#top' ? document.body : qs(hash);
+    if (!target) return;
+    if (lenis) {
+      lenis.scrollTo(target, { offset: hash === '#top' ? 0 : -72, duration: fast ? 0.8 : 1.3 });
+    } else {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function initNav() {
+    const toggle = $('navToggle');
+    const menu = $('menu');
+    if (!toggle || !menu) return;
+
+    function setMenu(open) {
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+      $('nav').classList.toggle('is-open', open);
+      if (open) $('nav').classList.remove('is-hidden');
+      document.body.style.overflow = open ? 'hidden' : '';
+      if (lenis) open ? lenis.stop() : lenis.start();
+      if (open) qs('a', menu).focus();
+    }
+
+    toggle.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) { setMenu(false); toggle.focus(); }
+    });
+
+    qsa('a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        const hash = a.getAttribute('href');
+        if (hash.length < 2 || !qs(hash) && hash !== '#top') return;
+        e.preventDefault();
+        if (!menu.hidden) setMenu(false);
+        history.replaceState(null, '', hash);
+        scrollToHash(hash);
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     FAQ: one answer open at a time; smooth open/close under motion
+     --------------------------------------------------------------------- */
+
+  function initFaq() {
+    const list = $('faqList');
+    if (!list) return;
+    const items = qsa('details', list);
+    items.forEach((d) => {
+      const summary = qs('summary', d);
+      const answer = qs('.faq-a', d);
+      summary.addEventListener('click', (e) => {
+        if (!motionOK) {
+          if (!d.open) items.forEach((o) => { if (o !== d) o.open = false; });
+          return;
+        }
+        e.preventDefault();
+        if (d.open) {
+          gsap.to(answer, { height: 0, opacity: 0, duration: 0.35, ease: 'power2.inOut', onComplete: () => { d.open = false; answer.style.height = ''; answer.style.opacity = ''; } });
+        } else {
+          items.forEach((o) => {
+            if (o !== d && o.open) {
+              const oa = qs('.faq-a', o);
+              gsap.to(oa, { height: 0, opacity: 0, duration: 0.3, ease: 'power2.inOut', onComplete: () => { o.open = false; oa.style.height = ''; oa.style.opacity = ''; } });
+            }
+          });
+          d.open = true;
+          gsap.from(answer, { height: 0, opacity: 0, duration: 0.45, ease: 'power3.out', clearProps: 'height,opacity' });
+        }
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     The walkthrough
+     --------------------------------------------------------------------- */
+
+  const ICON_OK = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+  const ICON_NO = '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
   const STEPS = [
     { name: 'Test A', verb: 'Diagnose', title: 'Find the weak topics.', line: 'One paper for the whole class. Every question is tagged with a topic and a difficulty level.' },
-    { name: 'Report', verb: 'Tell', title: 'Parents see topics, not just marks.', line: 'A report card with every topic: how many right, out of how many asked.' },
+    { name: 'Report', verb: 'Tell', title: 'Topics, not just marks.', line: 'A report card with every topic: how many right, out of how many asked.' },
     { name: 'Class', verb: 'Teach', title: 'Class starts at the mistake.', line: 'The teacher fixes the wrong step, not the whole chapter.' },
-    { name: 'Practice', verb: 'Drill', title: 'A practice sheet made for your child.', line: 'Only their weak topics. New questions, similar level.' },
-    { name: 'Test B', verb: 'Retest', title: 'Test the weak topics again.', line: "Your child's own paper, with never-seen questions. Then Test A and Test B are compared." }
+    { name: 'Practice', verb: 'Drill', title: 'A practice sheet made for each student.', line: 'Only their weak topics. New questions, similar level.' },
+    { name: 'Test B', verb: 'Retest', title: 'Test the weak topics again.', line: "Each student's own paper, with never-seen questions. Then Test A and Test B are compared." }
   ];
 
-  // Every worked answer below has been checked: practice and Test B items
-  // test only the followed topic, and none repeats a Test A question.
   const SUBJECTS = {
     maths: {
       name: 'Aarav',
@@ -195,27 +311,26 @@
 
   const dots = (right, total) =>
     '<span class="dots" aria-hidden="true">' +
-    Array.from({ length: total }, (_, i) => `<i class="dot${i < right ? ' on' : ''}"></i>`).join('') +
+    Array.from({ length: total }, (_, i) => `<i class="dot ${i < right ? 'is-green' : 'is-red'}"></i>`).join('') +
     '</span>';
 
-  // Weak topics other than the one the walkthrough follows
   const otherWeak = (s) => s.report.weak.slice(1).map(([topic]) => topic);
 
   function renderTestA(s) {
     const rows = s.testA.map((r) => {
       const ok = r.marked === r.correct;
       const bubbles = ['A', 'B', 'C', 'D'].map((letter) => {
-        let cls = 'bubble';
-        if (letter === r.marked) cls += ' on';
-        else if (!ok && letter === r.correct) cls += ' key';
-        return `<span class="${cls}">${letter}</span>`;
+        let cls = '';
+        if (letter === r.marked) cls = 'on';
+        else if (!ok && letter === r.correct) cls = 'key';
+        return `<i class="${cls}">${letter}</i>`;
       }).join('');
       const said = ok ? `Marked ${r.marked}, right` : `Marked ${r.marked}, answer ${r.correct}`;
       return `
-        <li class="omr-row${ok ? '' : ' miss'}">
+        <li class="${ok ? '' : 'miss'}">
           <span class="omr-q">Q${r.q}</span>
           <span class="bubbles" role="img" aria-label="${said}">${bubbles}</span>
-          <span class="omr-concept">${r.concept} <span class="tag">L${r.level}</span></span>
+          <span class="omr-c">${r.concept} <span class="tag">L${r.level}</span></span>
           <span class="mark ${ok ? 'ok' : 'no'}">${ok ? ICON_OK : ICON_NO}</span>
         </li>`;
     }).join('');
@@ -267,23 +382,23 @@
 
   function renderPractice(s) {
     const p = s.practice;
-    const qs = p.qs.map((q, i) => `<li><b>${i + 1}.</b><span>${q}</span></li>`).join('');
+    const items = p.qs.map((q, i) => `<li><b>${i + 1}.</b><span>${q}</span></li>`).join('');
     const others = otherWeak(s).map((topic) =>
-      `<li class="topic-more"><span>+ ${topic}</span><span>4 questions</span></li>`
+      `<li><span>+ ${topic}</span><span>4 questions</span></li>`
     ).join('');
 
     return `
       <div class="paper">
         <div class="paper-head"><strong>Practice sheet · ${s.name}</strong><span class="tag">Only weak topics</span></div>
-        <div class="topic-head"><span class="sheet-concept">${s.concept}</span><span class="tag">4 questions · ${p.levels}</span></div>
+        <div class="topic-head"><span class="topic">${s.concept}</span><span class="tag">4 questions · ${p.levels}</span></div>
         <p class="sheet-hint">${p.hint}</p>
-        <ol class="sheet-qs">${qs}</ol>
-        <ul>${others}</ul>
+        <ol class="qs">${items}</ol>
+        <ul class="more">${others}</ul>
         <div class="left-out">
           <span>Left out</span>
           <ul>
-            <li>${ICON_NO}${p.seen}</li>
-            <li>${ICON_NO}Topics ${s.name} already knows</li>
+            <li>${p.seen}</li>
+            <li>Topics ${s.name} already knows</li>
           </ul>
         </div>
       </div>`;
@@ -291,23 +406,23 @@
 
   function renderTestB(s) {
     const [, aRight, aTotal] = s.report.weak[0];
-    const qs = s.testB.map((q, i) =>
+    const items = s.testB.map((q, i) =>
       `<li><b>${i + 1}.</b><span>${q}</span><span class="mark ok">${ICON_OK}</span></li>`
     ).join('');
     const others = otherWeak(s).map((topic) =>
-      `<li class="topic-more"><span>+ ${topic}</span><span>3 questions</span></li>`
+      `<li><span>+ ${topic}</span><span>3 questions</span></li>`
     ).join('');
 
     return `
       <div class="paper">
         <div class="paper-head"><strong>Test B · ${s.name}</strong><span class="tag">Never-seen questions</span></div>
-        <div class="topic-head"><span class="sheet-concept">${s.concept}</span><span class="tag">3 questions</span></div>
-        <ol class="sheet-qs">${qs}</ol>
-        <ul>${others}</ul>
+        <div class="topic-head"><span class="topic">${s.concept}</span><span class="tag">3 questions</span></div>
+        <ol class="qs ticked">${items}</ol>
+        <ul class="more">${others}</ul>
         <div class="ab">
-          <div class="ab-before"><p class="ab-label">Test A</p><p class="ab-score">${aRight}/${aTotal}</p>${dots(aRight, aTotal)}</div>
-          <span class="ab-arrow" aria-hidden="true">→</span>
-          <div class="ab-after"><p class="ab-label">Test B</p><p class="ab-score">3/3</p>${dots(3, 3)}</div>
+          <div class="ab-col"><span class="ab-label">Test A</span><b class="ab-score red">${aRight}/${aTotal}</b></div>
+          <svg class="ab-arrow" viewBox="0 0 44 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h38M34 2l6 6-6 6"/></svg>
+          <div class="ab-col"><span class="ab-label">Test B</span><b class="ab-score green">3/3</b></div>
           <span class="pill pill-up">Improved</span>
         </div>
       </div>`;
@@ -316,21 +431,21 @@
   const RENDERERS = [renderTestA, renderReport, renderClass, renderPractice, renderTestB];
 
   function initWalkthrough() {
-    const root = document.getElementById('sim');
+    const root = $('sim');
     if (!root) return;
 
-    const $ = (id) => document.getElementById(id);
-    const tabs = Array.from(root.querySelectorAll('[role="tab"]'));
+    const tabs = qsa('[role="tab"]', root);
     const items = tabs.map((tab) => tab.parentElement);
-    const radios = Array.from(root.querySelectorAll('[role="radio"]'));
+    const radios = qsa('[role="radio"]', root);
     const panel = $('simPanel');
     const prev = $('simPrev');
     const next = $('simNext');
+    const stage = $('simStage');
 
     let step = 0;
     let subject = 'maths';
 
-    function render() {
+    function render(direction) {
       const s = SUBJECTS[subject];
       const st = STEPS[step];
 
@@ -353,19 +468,21 @@
       $('simCount').textContent = `Step ${step + 1} of ${STEPS.length} · ${st.verb}`;
       $('simTitle').textContent = st.title;
       $('simLine').textContent = st.line;
-      $('simStage').innerHTML = RENDERERS[step](s);
+      stage.innerHTML = RENDERERS[step](s);
 
       prev.disabled = step === 0;
       next.textContent = step === STEPS.length - 1 ? '↺ Start again' : `Next: ${STEPS[step + 1].name} →`;
 
-      panel.classList.remove('animate');
-      void panel.offsetWidth; // restart the entrance animation
-      panel.classList.add('animate');
+      if (motionOK && direction !== 0) {
+        gsap.from(stage.firstElementChild, { x: 22 * (direction || 1), opacity: 0, duration: 0.5, ease: 'power3.out', clearProps: 'all' });
+        gsap.from(qs('.walk-copy', root).children, { y: 10, opacity: 0, duration: 0.45, stagger: 0.05, ease: 'power3.out', clearProps: 'all' });
+      }
     }
 
     function goTo(index, focusTab) {
+      const from = step;
       step = (index + STEPS.length) % STEPS.length;
-      render();
+      render(step > from ? 1 : step < from ? -1 : 1);
       if (focusTab) tabs[step].focus();
     }
 
@@ -373,7 +490,7 @@
     prev.addEventListener('click', () => goTo(step - 1));
     next.addEventListener('click', () => goTo(step + 1));
 
-    root.querySelector('.rail').addEventListener('keydown', (e) => {
+    qs('.rail', root).addEventListener('keydown', (e) => {
       const moves = { ArrowRight: step + 1, ArrowLeft: step - 1, Home: 0, End: STEPS.length - 1 };
       if (!(e.key in moves)) return;
       e.preventDefault();
@@ -382,21 +499,249 @@
 
     radios.forEach((radio) => radio.addEventListener('click', () => {
       subject = radio.dataset.subject;
-      render();
+      render(1);
     }));
 
-    root.querySelector('.subject-switch').addEventListener('keydown', (e) => {
+    qs('.subject-switch', root).addEventListener('keydown', (e) => {
       const delta = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
       if (!delta) return;
       e.preventDefault();
       const keys = radios.map((r) => r.dataset.subject);
       subject = keys[(keys.indexOf(subject) + delta + keys.length) % keys.length];
-      render();
+      render(1);
       radios[keys.indexOf(subject)].focus();
     });
 
-    render();
+    render(0);
   }
 
-  document.addEventListener('DOMContentLoaded', initWalkthrough);
+  /* ---------------------------------------------------------------------
+     Motion
+     --------------------------------------------------------------------- */
+
+  function countUp(el, to, duration) {
+    const o = { v: 0 };
+    el.textContent = '0';
+    return gsap.to(o, {
+      v: to, duration: duration || 1.1, ease: 'power2.out',
+      onUpdate: () => { el.textContent = String(Math.round(o.v)); }
+    });
+  }
+
+  function initMotion() {
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    // Smooth scroll (native on touch)
+    lenis = new Lenis({ lerp: 0.16, smoothWheel: true });
+    window.__lenis = lenis;
+    lenis.on('scroll', ScrollTrigger.update);
+    ScrollTrigger.addEventListener('refresh', () => lenis.resize());
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+    if (location.hash && location.hash.length > 1) {
+      requestAnimationFrame(() => scrollToHash(location.hash, true));
+    }
+
+    const hero = qs('.hero');
+    const heroInner = qs('.hero-inner');
+    const wordmark = $('wordmark');
+    const card = $('heroCard');
+
+    // Split the wordmark in two kerned halves so the letters can rise
+    wordmark.innerHTML = '<span class="wm">After</span><span class="wm">Test</span>';
+    fitWordmarks();
+
+    // If the hero is taller than the viewport (very small screens), drop the sticky overlap
+    function checkHeroHeight() {
+      hero.classList.toggle('hero--tall', hero.offsetHeight > window.innerHeight + 40);
+    }
+    checkHeroHeight();
+
+    /* Load ------------------------------------------------------------- */
+    const load = gsap.timeline({ defaults: { ease: 'power4.out' } });
+    load
+      .set(wordmark, { visibility: 'visible' })
+      .from(qsa('.wm', wordmark), { yPercent: 108, duration: 1.2, stagger: 0.09 }, 0.1)
+      .to('.hero-meta', { opacity: 1, duration: 0.8 }, 0.5)
+      .fromTo(card, { y: 48, scale: 0.94, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 1, ease: 'power3.out' }, 0.75)
+      .fromTo('.hero-h1', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9 }, 0.95)
+      .fromTo('.hero-side', { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9 }, 1.1);
+
+    /* Hero card: 0/2 in red becomes 3/3 in green, on a loop ------------ */
+    const dotsA = qsa('.hc-dot-a', card);
+    const dotsB = qsa('.hc-dot-b', card);
+    const numB = qs('.hc-num-b', card);
+    const arrow = qs('.hc-arrow-path', card);
+    const pillWeak = qs('.hc-pill-weak', card);
+    const pillUp = qs('.hc-pill-up', card);
+    const arrowLen = arrow.getTotalLength();
+    gsap.set(arrow, { strokeDasharray: arrowLen, strokeDashoffset: arrowLen });
+
+    const cardLoop = gsap.timeline({ repeat: -1, repeatDelay: 4.5, paused: true });
+    cardLoop
+      .set(dotsA, { scale: 0, transformOrigin: 'center' })
+      .set(dotsB, { scale: 0, transformOrigin: 'center' })
+      .set(arrow, { strokeDashoffset: arrowLen })
+      .set(pillWeak, { opacity: 1 })
+      .set(pillUp, { opacity: 0 })
+      .call(() => { numB.textContent = '0'; })
+      .to(dotsA, { scale: 1, duration: 0.45, stagger: 0.18, ease: 'back.out(2.5)' }, 0.2)
+      .to(arrow, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut' }, 0.9)
+      .to(dotsB, { scale: 1, duration: 0.45, stagger: 0.28, ease: 'back.out(2.5)' }, 1.5)
+      .call(() => { numB.textContent = '1'; }, null, 1.6)
+      .call(() => { numB.textContent = '2'; }, null, 1.88)
+      .call(() => { numB.textContent = '3'; }, null, 2.16)
+      .to(pillWeak, { opacity: 0, duration: 0.3 }, 2.45)
+      .to(pillUp, { opacity: 1, duration: 0.35 }, 2.5);
+    load.call(() => cardLoop.play(), null, 1.4);
+
+    /* Hero dissolves as the dark section slides over it ------------------ */
+    const touch = window.matchMedia('(hover: none)').matches;
+    const heroScrub = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.story', start: 'top bottom', end: 'top 15%', scrub: true,
+        onLeave: () => { heroInner.style.visibility = 'hidden'; cardLoop.pause(); },
+        onEnterBack: () => { heroInner.style.visibility = ''; cardLoop.play(); }
+      }
+    });
+    heroScrub
+      .to('.wordmark-wrap', touch ? { scale: 0.94, y: -40, opacity: 0, ease: 'none' } : { scale: 0.94, y: -40, filter: 'blur(14px)', opacity: 0, ease: 'none' }, 0)
+      .to('.hero-bottom, .hero-meta', { y: -24, opacity: 0, ease: 'none' }, 0);
+
+
+    /* Reveals ----------------------------------------------------------- */
+    qsa('[data-reveal]').forEach((el) => {
+      gsap.from(el, { y: 28, opacity: 0, duration: 0.95, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+    });
+    qsa('[data-reveal-group]').forEach((group) => {
+      gsap.from(group.children, { y: 24, opacity: 0, duration: 0.9, stagger: 0.09, ease: 'power3.out', scrollTrigger: { trigger: group, start: 'top 88%', once: true } });
+    });
+    qsa('[data-stagger]').forEach((group) => {
+      gsap.from(group.children, { y: 26, opacity: 0, duration: 0.8, stagger: 0.09, ease: 'power3.out', scrollTrigger: { trigger: group, start: 'top 86%', once: true } });
+    });
+
+    /* The pinned story: Test A → practice sheet → Test B ---------------- */
+    const stageWrap = $('stageWrap');
+    const beats = qsa('.beat');
+    const sheetA = $('sheetA'); const sheetP = $('sheetP'); const sheetB = $('sheetB');
+    const fan = qs('.fan');
+
+    function setBeat(i) {
+      beats.forEach((b, j) => b.classList.toggle('is-on', j === i));
+    }
+
+    const story = gsap.timeline({
+      scrollTrigger: {
+        trigger: stageWrap, start: 'top top', end: '+=230%', pin: true, scrub: true, anticipatePin: 1,
+        onUpdate: (self) => setBeat(self.progress < 0.36 ? 0 : self.progress < 0.7 ? 1 : 2)
+      }
+    });
+    story
+      .from(fan.children, { scale: 0.7, opacity: 0, duration: 0.6, stagger: 0.04, ease: 'power2.out' }, 0)
+      .from(sheetA, { y: 60, duration: 0.8, ease: 'power2.out' }, 0)
+      .to({}, { duration: 1.2 })
+      .to(fan.children, { scale: 0.85, opacity: 0, duration: 0.5, stagger: 0.03 }, 'p')
+      .to(sheetA, { y: -40, scale: 0.96, opacity: 0, duration: 0.6, ease: 'power2.in' }, 'p')
+      .fromTo(sheetP, { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out' }, 'p+=0.25')
+      .to({}, { duration: 1.2 })
+      .to(sheetP, { y: -40, scale: 0.96, opacity: 0, duration: 0.6, ease: 'power2.in' }, 'b')
+      .fromTo(sheetB, { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out' }, 'b+=0.25')
+      .from(qsa('.mark', sheetB), { scale: 0, duration: 0.4, stagger: 0.12, ease: 'back.out(2)' }, 'b+=0.8')
+      .to({}, { duration: 0.8 });
+
+    /* Result table: rows in, counts up ---------------------------------- */
+    const rows = qsa('[data-result-row]');
+    gsap.from(rows, {
+      y: 18, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+      scrollTrigger: { trigger: '#result', start: 'top 70%', once: true, onEnter: () => {
+        rows.forEach((row, i) => {
+          qsa('[data-count]', row).forEach((n) => gsap.delayedCall(0.2 + i * 0.12, () => countUp(n, +n.dataset.count, 0.9)));
+          const pill = qs('.pill', row);
+          gsap.from(pill, { scale: 0.7, opacity: 0, duration: 0.5, ease: 'back.out(2)', delay: 0.9 + i * 0.12 });
+        });
+      } }
+    });
+
+    /* Portal: stats count up ------------------------------------------- */
+    const stats = qsa('.portal-stats [data-count]');
+    if (stats.length) {
+      ScrollTrigger.create({ trigger: '.portal-stats', start: 'top 85%', once: true, onEnter: () => stats.forEach((n, i) => gsap.delayedCall(i * 0.1, () => countUp(n, +n.dataset.count))) });
+    }
+
+    /* Closing: words rise, the tick draws itself ------------------------ */
+    const closingWords = qsa('#closingLine .w');
+    const tick = qs('.closing-logo .logo-tick');
+    const tickLen = tick.getTotalLength();
+    gsap.set(tick, { strokeDasharray: tickLen, strokeDashoffset: tickLen });
+    gsap.timeline({ scrollTrigger: { trigger: '.closing', start: 'top 70%', once: true } })
+      .from('.closing-logo', { scale: 0.6, opacity: 0, duration: 0.6, ease: 'back.out(1.8)' }, 0)
+      .to(tick, { strokeDashoffset: 0, duration: 0.7, ease: 'power2.inOut' }, 0.3)
+      .from(closingWords, { yPercent: 60, opacity: 0, duration: 0.9, stagger: 0.07, ease: 'power3.out' }, 0.15);
+
+    /* Footer wordmark drifts up --------------------------------------- */
+    gsap.from('#footerMark', { yPercent: 30, ease: 'none', scrollTrigger: { trigger: '.footer-mark-clip', start: 'top bottom', end: 'bottom bottom', scrub: true } });
+
+    /* Triggers were created out of page order; sort so pin spacing is counted */
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
+
+    /* Keep sizes right on resize --------------------------------------- */
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { fitWordmarks(); checkHeroHeight(); ScrollTrigger.refresh(); }, 150);
+    });
+    document.fonts && document.fonts.ready.then(() => { fitWordmarks(); ScrollTrigger.refresh(); });
+  }
+
+  /* The nav pill turns dark while it sits over a dark section ------------ */
+  function initNavShade() {
+    const nav = $('nav');
+    const darkSections = qsa('.story, .closing, .footer');
+    if (!nav || !darkSections.length) return;
+    let ticking = false;
+    let lastY = window.scrollY;
+    let hidden = false;
+    function update() {
+      ticking = false;
+      const y = window.scrollY;
+      const probe = Math.min(36, nav.offsetHeight / 2);
+      const over = darkSections.some((sec) => { const r = sec.getBoundingClientRect(); return r.top <= probe && r.bottom >= probe; });
+      nav.classList.toggle('is-dark', over);
+      nav.classList.toggle('is-scrolled', y > 24);
+      // Tuck the header away while reading down the page; bring it back on the way up
+      const delta = y - lastY;
+      if (y < 120) hidden = false;
+      else if (delta > 6) hidden = true;
+      else if (delta < -6) hidden = false;
+      nav.classList.toggle('is-hidden', hidden && !nav.classList.contains('is-open'));
+      lastY = y;
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+  }
+
+  function initStatic() {
+    const wordmark = $('wordmark');
+    if (wordmark) {
+      wordmark.innerHTML = '<span class="wm">After</span><span class="wm">Test</span>';
+      fitWordmarks();
+      const hero = qs('.hero');
+      hero.classList.toggle('hero--tall', hero.offsetHeight > window.innerHeight + 40);
+      let t;
+      window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(fitWordmarks, 150); });
+      document.fonts && document.fonts.ready.then(fitWordmarks);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initNav();
+    initFaq();
+    initWalkthrough();
+    if (motionOK) initMotion(); else initStatic();
+    initNavShade();
+  });
 })();
