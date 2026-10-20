@@ -17,7 +17,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="stylesheet" href="styles.css?v=20261020c">
+  <link rel="stylesheet" href="styles.css?v=20261020e">
   <script>
     // Motion only when the visitor allows it. app.js removes the flag again if the libraries fail.
     if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches && location.search.indexOf('nomotion') === -1) {
@@ -28,7 +28,7 @@
   <script defer src="assets/vendor/gsap.min.js"></script>
   <script defer src="assets/vendor/ScrollTrigger.min.js"></script>
   <script defer src="assets/vendor/lenis.min.js"></script>
-  <script defer src="app.js?v=20261020c"></script>
+  <script defer src="app.js?v=20261020e"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -91,6 +91,20 @@
           <div class="wordmark-clip">
             <p class="wordmark" id="wordmark" aria-hidden="true">AfterTest</p>
           </div>
+        </div>
+
+        <!-- The words on the left, the product on the right; the card never covers the wordmark -->
+        <div class="hero-bottom">
+          <div class="hero-text">
+            <h1 class="hero-h1" data-load>Turn <em class="pen">wrong answers</em> into <mark class="hl">strong topics</mark>.</h1>
+            <div class="hero-side" data-load>
+              <p class="lead">After each test, AfterTest finds the weak topics, gives practice on just those, then tests them again.</p>
+              <div class="hero-cta">
+                <a href="#tests" class="btn btn-ink">How it works</a>
+                <a href="#how" class="btn btn-line">See an example</a>
+              </div>
+            </div>
+          </div>
           <div class="hero-card" id="heroCard" role="img" aria-label="Example: Aarav, Class 10 Maths. Splitting the middle term: 0 of 2 in Test A, 3 of 3 in Test B. Improved." data-load>
             <p class="hc-meta"><span>Aarav · Class 10 Maths</span><span class="tag">Example</span></p>
             <p class="hc-topic">Splitting the middle term</p>
@@ -107,17 +121,6 @@
                 <span class="hc-score green"><b class="hc-num-b">3</b>/3</span>
               </div>
               <span class="hc-pill"><span class="pill pill-weak hc-pill-weak">Weak</span><span class="pill pill-up hc-pill-up">Improved</span></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-bottom">
-          <h1 class="hero-h1" data-load>Turn <em class="pen">wrong answers</em> into <mark class="hl">strong topics</mark>.</h1>
-          <div class="hero-side" data-load>
-            <p class="lead">After each test, AfterTest finds the weak topics, gives practice on just those, then tests them again.</p>
-            <div class="hero-cta">
-              <a href="#tests" class="btn btn-ink">How it works</a>
-              <a href="#how" class="btn btn-line">See an example</a>
             </div>
           </div>
         </div>
@@ -261,160 +264,165 @@
       </div>
     </section>
 
-    <!-- One example student through every step -->
-    <section class="example" id="how">
-      <div class="container">
-        <div class="section-head" data-reveal-group>
-          <p class="eyebrow">Example</p>
-          <h2>Follow one weak topic, step by step.</h2>
-        </div>
+    <!-- The light chapter: Example to FAQ. It slides over the end of the story as one sheet,
+         and its last screen holds while the closing slides over it -->
+    <div class="light-chapter">
 
-        <div class="walk" id="sim" data-reveal>
-          <div class="walk-top">
-            <div class="subject-switch" role="radiogroup" aria-label="Example subject">
-              <button type="button" role="radio" aria-checked="true" data-subject="maths">Maths</button>
-              <button type="button" role="radio" aria-checked="false" data-subject="physics" tabindex="-1">Physics</button>
-              <button type="button" role="radio" aria-checked="false" data-subject="chemistry" tabindex="-1">Chemistry</button>
-              <button type="button" role="radio" aria-checked="false" data-subject="biology" tabindex="-1">Biology</button>
-            </div>
-            <p class="walk-who" id="simWho"></p>
+      <!-- One example student through every step -->
+      <section class="example" id="how">
+        <div class="container">
+          <div class="section-head" data-reveal-group>
+            <p class="eyebrow">Example</p>
+            <h2>Follow one weak topic, step by step.</h2>
           </div>
 
-          <ol class="rail" role="tablist" aria-label="The five steps">
-            <li role="presentation"><button type="button" role="tab" id="simTab0" aria-controls="simPanel"><span class="rail-dot">1</span><span class="rail-name">Test A</span><span class="rail-verb">Diagnose</span></button></li>
-            <li role="presentation"><button type="button" role="tab" id="simTab1" aria-controls="simPanel"><span class="rail-dot">2</span><span class="rail-name">Report</span><span class="rail-verb">Tell</span></button></li>
-            <li role="presentation"><button type="button" role="tab" id="simTab2" aria-controls="simPanel"><span class="rail-dot">3</span><span class="rail-name">Class</span><span class="rail-verb">Teach</span></button></li>
-            <li role="presentation"><button type="button" role="tab" id="simTab3" aria-controls="simPanel"><span class="rail-dot">4</span><span class="rail-name">Practice</span><span class="rail-verb">Drill</span></button></li>
-            <li role="presentation"><button type="button" role="tab" id="simTab4" aria-controls="simPanel"><span class="rail-dot">5</span><span class="rail-name">Test B</span><span class="rail-verb">Retest</span></button></li>
-          </ol>
-
-          <div class="walk-body" id="simPanel" role="tabpanel" aria-labelledby="simTab0">
-            <div class="walk-copy">
-              <p class="walk-count" id="simCount"></p>
-              <h3 id="simTitle"></h3>
-              <p class="walk-line" id="simLine"></p>
-              <div class="walk-nav">
-                <button type="button" class="btn btn-line btn-sm" id="simPrev">← Back</button>
-                <button type="button" class="btn btn-ink btn-sm" id="simNext">Next</button>
+          <div class="walk" id="sim" data-reveal>
+            <div class="walk-top">
+              <div class="subject-switch" role="radiogroup" aria-label="Example subject">
+                <button type="button" role="radio" aria-checked="true" data-subject="maths">Maths</button>
+                <button type="button" role="radio" aria-checked="false" data-subject="physics" tabindex="-1">Physics</button>
+                <button type="button" role="radio" aria-checked="false" data-subject="chemistry" tabindex="-1">Chemistry</button>
+                <button type="button" role="radio" aria-checked="false" data-subject="biology" tabindex="-1">Biology</button>
               </div>
+              <p class="walk-who" id="simWho"></p>
             </div>
-            <div class="walk-stage" id="simStage"></div>
+
+            <ol class="rail" role="tablist" aria-label="The five steps">
+              <li role="presentation"><button type="button" role="tab" id="simTab0" aria-controls="simPanel"><span class="rail-dot">1</span><span class="rail-name">Test A</span><span class="rail-verb">Diagnose</span></button></li>
+              <li role="presentation"><button type="button" role="tab" id="simTab1" aria-controls="simPanel"><span class="rail-dot">2</span><span class="rail-name">Report</span><span class="rail-verb">Tell</span></button></li>
+              <li role="presentation"><button type="button" role="tab" id="simTab2" aria-controls="simPanel"><span class="rail-dot">3</span><span class="rail-name">Class</span><span class="rail-verb">Teach</span></button></li>
+              <li role="presentation"><button type="button" role="tab" id="simTab3" aria-controls="simPanel"><span class="rail-dot">4</span><span class="rail-name">Practice</span><span class="rail-verb">Drill</span></button></li>
+              <li role="presentation"><button type="button" role="tab" id="simTab4" aria-controls="simPanel"><span class="rail-dot">5</span><span class="rail-name">Test B</span><span class="rail-verb">Retest</span></button></li>
+            </ol>
+
+            <div class="walk-body" id="simPanel" role="tabpanel" aria-labelledby="simTab0">
+              <div class="walk-copy">
+                <p class="walk-count" id="simCount"></p>
+                <h3 id="simTitle"></h3>
+                <p class="walk-line" id="simLine"></p>
+                <div class="walk-nav">
+                  <button type="button" class="btn btn-line btn-sm" id="simPrev">← Back</button>
+                  <button type="button" class="btn btn-ink btn-sm" id="simNext">Next</button>
+                </div>
+              </div>
+              <div class="walk-stage" id="simStage"></div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Parent portal preview -->
-    <section class="portal" id="portal">
-      <div class="container">
-        <div class="section-head" data-reveal-group>
-          <p class="eyebrow">Parent portal</p>
-          <h2>Every chapter, every topic, in one place.</h2>
-          <p class="section-sub">What was weak, what improved and what comes next.</p>
-        </div>
-
-        <div class="portal-frame" data-reveal>
-          <div class="portal-bar">
-            <span class="portal-brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round"><path class="logo-ring" d="M24.66 14.41A10 10 0 1 1 20 8.34"/><path class="logo-tick" d="M10.5 17l3.5 3.5L27 6"/></svg></span><strong>Parent portal</strong></span>
-            <span class="portal-child">Aarav · Class 10</span>
-            <span class="tag">Example</span>
+      <!-- Parent portal preview -->
+      <section class="portal" id="portal">
+        <div class="container">
+          <div class="section-head" data-reveal-group>
+            <p class="eyebrow">Parent portal</p>
+            <h2>Every chapter, every topic, in one place.</h2>
+            <p class="section-sub">What was weak, what improved and what comes next.</p>
           </div>
 
-          <div class="portal-body">
-            <div class="portal-main">
-              <div class="portal-stats">
-                <div class="stat"><b data-count="4">4</b><span>Chapters followed</span></div>
-                <div class="stat"><b data-count="10">10</b><span>Weak topics found</span></div>
-                <div class="stat good"><b data-count="4">4</b><span>Improved in Test B</span></div>
+          <div class="portal-frame" data-reveal>
+            <div class="portal-bar">
+              <span class="portal-brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round"><path class="logo-ring" d="M24.66 14.41A10 10 0 1 1 20 8.34"/><path class="logo-tick" d="M10.5 17l3.5 3.5L27 6"/></svg></span><strong>Parent portal</strong></span>
+              <span class="portal-child">Aarav · Class 10</span>
+              <span class="tag">Example</span>
+            </div>
+
+            <div class="portal-body">
+              <div class="portal-main">
+                <div class="portal-stats">
+                  <div class="stat"><b data-count="4">4</b><span>Chapters followed</span></div>
+                  <div class="stat"><b data-count="10">10</b><span>Weak topics found</span></div>
+                  <div class="stat good"><b data-count="4">4</b><span>Improved in Test B</span></div>
+                </div>
+
+                <p class="portal-label">Chapters</p>
+                <ul class="chapters" data-stagger>
+                  <li class="chapter">
+                    <p class="chapter-name"><b>Quadratic equations</b><span>Maths</span></p>
+                    <ol class="loop-mini" aria-label="Test A, practice and Test B done"><li class="done">Test A</li><li class="done">Practice</li><li class="done">Test B</li></ol>
+                    <span class="pill pill-up">2 of 3 improved</span>
+                  </li>
+                  <li class="chapter">
+                    <p class="chapter-name"><b>Chemical reactions</b><span>Chemistry</span></p>
+                    <ol class="loop-mini" aria-label="Test A, practice and Test B done"><li class="done">Test A</li><li class="done">Practice</li><li class="done">Test B</li></ol>
+                    <span class="pill pill-up">2 of 2 improved</span>
+                  </li>
+                  <li class="chapter">
+                    <p class="chapter-name"><b>Light: reflection</b><span>Physics</span></p>
+                    <ol class="loop-mini" aria-label="Test A and practice done, Test B next"><li class="done">Test A</li><li class="done">Practice</li><li class="now">Test B</li></ol>
+                    <span class="pill pill-neutral">Test B on Friday</span>
+                  </li>
+                  <li class="chapter">
+                    <p class="chapter-name"><b>Life processes</b><span>Biology</span></p>
+                    <ol class="loop-mini" aria-label="Test A done, practice now"><li class="done">Test A</li><li class="now">Practice</li><li>Test B</li></ol>
+                    <span class="pill pill-neutral">Practice sheet ready</span>
+                  </li>
+                </ul>
               </div>
 
-              <p class="portal-label">Chapters</p>
-              <ul class="chapters" data-stagger>
-                <li class="chapter">
-                  <p class="chapter-name"><b>Quadratic equations</b><span>Maths</span></p>
-                  <ol class="loop-mini" aria-label="Test A, practice and Test B done"><li class="done">Test A</li><li class="done">Practice</li><li class="done">Test B</li></ol>
-                  <span class="pill pill-up">2 of 3 improved</span>
-                </li>
-                <li class="chapter">
-                  <p class="chapter-name"><b>Chemical reactions</b><span>Chemistry</span></p>
-                  <ol class="loop-mini" aria-label="Test A, practice and Test B done"><li class="done">Test A</li><li class="done">Practice</li><li class="done">Test B</li></ol>
-                  <span class="pill pill-up">2 of 2 improved</span>
-                </li>
-                <li class="chapter">
-                  <p class="chapter-name"><b>Light: reflection</b><span>Physics</span></p>
-                  <ol class="loop-mini" aria-label="Test A and practice done, Test B next"><li class="done">Test A</li><li class="done">Practice</li><li class="now">Test B</li></ol>
-                  <span class="pill pill-neutral">Test B on Friday</span>
-                </li>
-                <li class="chapter">
-                  <p class="chapter-name"><b>Life processes</b><span>Biology</span></p>
-                  <ol class="loop-mini" aria-label="Test A done, practice now"><li class="done">Test A</li><li class="now">Practice</li><li>Test B</li></ol>
-                  <span class="pill pill-neutral">Practice sheet ready</span>
-                </li>
-              </ul>
+              <aside class="portal-side">
+                <p class="portal-label">Next up</p>
+                <div class="next-card"><b>Test B · Light: reflection</b><span>Friday · 2 weak topics</span></div>
+
+                <p class="portal-label">Report cards</p>
+                <ul class="cards-list">
+                  <li><span>Chemical reactions · Test B</span><b>2 of 2 improved</b></li>
+                  <li><span>Quadratic equations · Test B</span><b>2 of 3 improved</b></li>
+                  <li><span>Light: reflection · Test A</span><b>2 weak topics</b></li>
+                  <li><span>Life processes · Test A</span><b>3 weak topics</b></li>
+                </ul>
+              </aside>
             </div>
+          </div>
 
-            <aside class="portal-side">
-              <p class="portal-label">Next up</p>
-              <div class="next-card"><b>Test B · Light: reflection</b><span>Friday · 2 weak topics</span></div>
+          <p class="portal-cta" data-reveal><a class="btn btn-ink" href="https://focuslabacademy.in/portal/login" target="_blank" rel="noopener">Sign in to the parent portal ↗</a></p>
+        </div>
+      </section>
 
-              <p class="portal-label">Report cards</p>
-              <ul class="cards-list">
-                <li><span>Chemical reactions · Test B</span><b>2 of 2 improved</b></li>
-                <li><span>Quadratic equations · Test B</span><b>2 of 3 improved</b></li>
-                <li><span>Light: reflection · Test A</span><b>2 weak topics</b></li>
-                <li><span>Life processes · Test A</span><b>3 weak topics</b></li>
-              </ul>
-            </aside>
+      <!-- Vision -->
+      <section class="vision" id="vision">
+        <div class="container vision-head" data-reveal-group>
+          <p class="eyebrow">Why it exists</p>
+          <h2 class="vision-line"><span class="s">AfterTest finds what you <em class="weak">don't know</em>.</span> <span class="s">Then it makes sure you <mark class="hl">understand it</mark>.</span></h2>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq" id="faq">
+        <div class="container faq-grid">
+          <div class="section-head faq-head" data-reveal-group>
+            <p class="eyebrow">FAQ</p>
+            <h2>Common questions</h2>
+          </div>
+          <div class="faq-list" id="faqList" data-stagger>
+            <details open>
+              <summary>How does AfterTest know which topics are weak?</summary>
+              <div class="faq-a"><p>Every Test A question is tagged with one topic and a difficulty level. Wrong answers are grouped by topic, so the report card names the exact topics to work on, not just the marks lost.</p></div>
+            </details>
+            <details>
+              <summary>Will two students in the same class get the same practice sheet?</summary>
+              <div class="faq-a"><p>Usually not. Each sheet has new questions on that student's own weak topics, at a similar level. Topics they already got right are left out.</p></div>
+            </details>
+            <details>
+              <summary>Is Test B the same for every student?</summary>
+              <div class="faq-a"><p>No. Each student's Test B covers only their weak topics from Test A, with questions they have not seen in Test A or in practice.</p></div>
+            </details>
+            <details>
+              <summary>What if a topic is still weak after Test B?</summary>
+              <div class="faq-a"><p>The report card marks it "Still weak" and the teacher takes it up again with the student.</p></div>
+            </details>
+            <details>
+              <summary>Does a good Test B score mean the topic is mastered?</summary>
+              <div class="faq-a"><p>It is strong evidence, not a guarantee. You see real counts, like 0/2 in Test A and 3/3 in Test B, never a vague percentage.</p></div>
+            </details>
+            <details>
+              <summary>Who is it for?</summary>
+              <div class="faq-a"><p>Students of Physics, Chemistry, Maths and Biology, in CBSE, ICSE and IB schools and preparing for JEE and NEET.</p></div>
+            </details>
           </div>
         </div>
-
-        <p class="portal-cta" data-reveal><a class="btn btn-ink" href="https://focuslabacademy.in/portal/login" target="_blank" rel="noopener">Sign in to the parent portal ↗</a></p>
-      </div>
-    </section>
-
-    <!-- Vision -->
-    <section class="vision" id="vision">
-      <div class="container vision-head" data-reveal-group>
-        <p class="eyebrow">Why it exists</p>
-        <h2 class="vision-line"><span class="s">AfterTest finds what you <em class="weak">don't know</em>.</span> <span class="s">Then it makes sure you <mark class="hl">understand it</mark>.</span></h2>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="faq" id="faq">
-      <div class="container faq-grid">
-        <div class="section-head faq-head" data-reveal-group>
-          <p class="eyebrow">FAQ</p>
-          <h2>Common questions</h2>
-        </div>
-        <div class="faq-list" id="faqList" data-stagger>
-          <details open>
-            <summary>How does AfterTest know which topics are weak?</summary>
-            <div class="faq-a"><p>Every Test A question is tagged with one topic and a difficulty level. Wrong answers are grouped by topic, so the report card names the exact topics to work on, not just the marks lost.</p></div>
-          </details>
-          <details>
-            <summary>Will two students in the same class get the same practice sheet?</summary>
-            <div class="faq-a"><p>Usually not. Each sheet has new questions on that student's own weak topics, at a similar level. Topics they already got right are left out.</p></div>
-          </details>
-          <details>
-            <summary>Is Test B the same for every student?</summary>
-            <div class="faq-a"><p>No. Each student's Test B covers only their weak topics from Test A, with questions they have not seen in Test A or in practice.</p></div>
-          </details>
-          <details>
-            <summary>What if a topic is still weak after Test B?</summary>
-            <div class="faq-a"><p>The report card marks it "Still weak" and the teacher takes it up again with the student.</p></div>
-          </details>
-          <details>
-            <summary>Does a good Test B score mean the topic is mastered?</summary>
-            <div class="faq-a"><p>It is strong evidence, not a guarantee. You see real counts, like 0/2 in Test A and 3/3 in Test B, never a vague percentage.</p></div>
-          </details>
-          <details>
-            <summary>Who is it for?</summary>
-            <div class="faq-a"><p>Students of Physics, Chemistry, Maths and Biology, in CBSE, ICSE and IB schools and preparing for JEE and NEET.</p></div>
-          </details>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <!-- Closing -->
     <section class="closing" id="about">

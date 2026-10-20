@@ -68,6 +68,17 @@ Scale: wordmark `clamp(72px, 19.5vw, 300px)`; h1 `clamp(34px, 5vw, 64px)`; h2
   phone, no layout shift: CLS while scrolling the page 0.006 desktop / 0.0004 phone, against 1.42 / 1.77
   with the old ScrollTrigger pin). `ScrollTrigger.config({ ignoreMobileResize: true })`; sizes that move
   the layout are set in ScrollTrigger's `refreshInit`, never while scrolling.
+* Chapters (owner, 20 Oct 2026: the scroll should feel the same everywhere). The page has four
+  colour chapters: hero (paper), Test A & B (ink), the light chapter Example → FAQ (paper, one
+  wrapper `.light-chapter`), closing + footer (ink). At each colour change the next chapter slides
+  up over the last screen of the one before, with rounded top corners (32px, 24px on phones). That
+  screen holds still: it is CSS-sticky at its own bottom edge (`--hold-h` = its height, kept current
+  by a ResizeObserver, so an opened FAQ answer moves the hold point too). Its content sinks back and
+  fades (scale 0.94, y −40, opacity 0), scrubbed until the next chapter is 75% of the way up, or
+  sooner where the page ends below it. A fully covered chapter is hidden. Inside a chapter, sections
+  scroll normally. While ScrollTrigger measures, the holds are lifted (`html.holds` removed) so
+  nothing is measured from where it happens to be held; header links measure the same way, and the
+  header's dark or light shade follows the chapter actually on top.
 * The frame in which a change starts does almost no work: the details inside each paper are set up
   while it is out of sight, nothing is measured, nothing is parsed.
 * Budget: 60 fps on a mid-range Android. Measured with a scripted scroll (wheel on desktop, touch flicks
@@ -93,14 +104,18 @@ Copy (≈40 words): meta "Find the gap. Drill it. Retest it." / "CBSE · ICSE ·
 wordmark **AfterTest**; h1 "Turn *wrong answers* into **strong topics**."; lead "After each
 test, AfterTest finds the weak topics, gives practice on just those, then tests them again.";
 buttons "How it works" → `#tests`, "See an example" → `#how`.
-Hero object (the product, built in HTML + SVG, no image): a report-card row overlapping the
-lower right of the wordmark: *Aarav · Class 10 Maths* / **Splitting the middle term** /
+Hero object (the product, built in HTML + SVG, no image): a report-card row that never covers the
+wordmark (owner, 20 Oct 2026: the whole brand must be seen). On a laptop it stands at the bottom
+right beside the headline, lead and buttons; on a phone it sits just under the wordmark. The
+floating chat pill keeps clear of this first screen (on a phone it appears after the Test A/B
+cards): *Aarav · Class 10 Maths* / **Splitting the middle term** /
 Test A ○○ **0/2** → Test B ●●● **3/3** / pill "Improved". Numbers are the old site's.
 Motion: load — wordmark letters rise with a 0.04s stagger, card lifts in, h1 words rise, lead
 and buttons fade. Card then plays: Test A dots fill red with crosses, the arrow draws, Test B
 dots fill green one by one, 3/3 counts up, pill flips "Weak" → "Improved"; repeats every 7 s.
-Scroll — hero is sticky; the dark section slides up over it with rounded top corners while the
-wordmark and card scale to 0.94 and fade out over the first 80% of a viewport (no blur).
+Scroll — the hero's last screen holds (on a phone, where the hero is taller than the screen, it
+holds once its bottom is reached); the dark section slides up over it with rounded top corners
+while the wordmark and card scale to 0.94 and fade out over the first 75% of a viewport (no blur).
 
 ### 2 · Test A & B (`#tests`, dark, pinned)
 One idea: the same weak topic, three beats.
@@ -137,6 +152,8 @@ Summary: "2 of 3 weak topics improved. Word problems: the teacher follows up."
 Motion: rows stagger in; Test B counts count up from 0; pills pop (`scale .8 → 1`).
 
 ### 4 · Example (`#how`, light)
+Opens the light chapter: the Example section's rounded top edge slides up over the held end of
+the dark story (the result table and the bottom of the Test B stage sink back and fade).
 One idea: follow one weak topic through all five steps.
 Copy: eyebrow "Example"; h2 "Follow one weak topic, step by step."; the five step titles and
 one-line descriptions from the old `app.js`, unchanged in meaning; subject tabs Maths ·
@@ -181,8 +198,9 @@ Focus Lab Academy, Plot No. 85P, Opposite Bharti International Convent School, S
 Gurugram, Haryana 122011, "Open in Maps ↗"; Contact — +91 92790 09342 (tel:), WhatsApp,
 admin@aftertest.in (mailto:); bottom line "aftertest.in · A Focus Lab Academy company ·
 Gurugram". The giant wordmark, shown whole, closes the page.
-Motion: tagline words rise; the logo tick draws itself; the footer wordmark drifts up slightly
-on scroll.
+Motion: the closing slides up over the held last screen of the light chapter (the end of the
+vision line and the FAQ sink back and fade); tagline words rise; the logo tick draws itself; the
+footer wordmark drifts up slightly on scroll.
 
 ## 5. Not allowed (checked on every pass)
 No demo booking, forms, pricing, testimonials, ratings, logos, invented students, scores or

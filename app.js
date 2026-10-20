@@ -47,13 +47,25 @@
 
   let lenis = null;
 
+  // Where an element sits in the page with nothing holding. A held chapter is sticky, so while it
+  // holds the browser reports where it is held, not where it lives.
+  function pageTop(el) {
+    const holding = html.classList.contains('holds');
+    if (holding) html.classList.remove('holds');
+    const y = el.getBoundingClientRect().top + window.scrollY;
+    if (holding) html.classList.add('holds');
+    return y;
+  }
+
   function scrollToHash(hash, fast) {
     const target = hash === '#top' ? document.body : qs(hash);
     if (!target) return;
+    const pad = parseFloat(getComputedStyle(html).scrollPaddingTop) || 0;
+    const y = hash === '#top' ? 0 : Math.max(0, pageTop(target) - pad);
     if (lenis) {
-      lenis.scrollTo(target, { offset: hash === '#top' ? 0 : -72, duration: fast ? 0.8 : 1.3 });
+      lenis.scrollTo(hash === '#top' ? 0 : y - 72, { duration: fast ? 0.8 : 1.3 });
     } else {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
   }
 
@@ -581,7 +593,6 @@
       requestAnimationFrame(() => scrollToHash(location.hash, true));
     }
 
-    const hero = qs('.hero');
     const heroInner = qs('.hero-inner');
     const wordmark = $('wordmark');
     const card = $('heroCard');
@@ -589,12 +600,6 @@
     // Split the wordmark in two kerned halves so the letters can rise
     wordmark.innerHTML = '<span class="wm">After</span><span class="wm">Test</span>';
     fitWordmarks();
-
-    // If the hero is taller than the viewport (very small screens), drop the sticky overlap
-    function checkHeroHeight() {
-      hero.classList.toggle('hero--tall', hero.offsetHeight > window.innerHeight + 40);
-    }
-    checkHeroHeight();
 
     /* Load ------------------------------------------------------------- */
     const load = gsap.timeline({ defaults: { ease: 'power4.out' } });
@@ -637,7 +642,7 @@
     /* Hero dissolves as the dark section slides over it ------------------ */
     const heroScrub = gsap.timeline({
       scrollTrigger: {
-        trigger: '.story', start: 'top bottom', end: 'top 15%', scrub: true,
+        trigger: '.story', start: 'top bottom', end: 'top 25%', scrub: true,
         onLeave: () => { heroInner.style.visibility = 'hidden'; cardLoop.pause(); },
         onEnterBack: () => { heroInner.style.visibility = ''; cardLoop.play(); }
       }
@@ -660,6 +665,24 @@
 
     /* The story: Test A → practice sheet → Test B ----------------------- */
     initStory();
+
+    /* Chapters: each colour change slides over the screen before it ------ */
+    initChapters();
+
+    /* The chat pill keeps clear of the opening screen. It appears once the dark section has risen
+       40% of the way; on a phone, where it would sit on the words and then on the papers, only
+       after the Test A/B cards. ---------------------------------------------- */
+    const chat = qs('.wa-float');
+    const phone = window.matchMedia('(max-width: 900px)');
+    if (chat) {
+      const away = (on) => chat.classList.toggle('is-away', on);
+      ScrollTrigger.create({
+        trigger: '.story', end: 'max',
+        start: () => (phone.matches ? 'top ' + -($('stageTrack').offsetTop + $('stageTrack').offsetHeight - window.innerHeight) + 'px' : 'top 60%'),
+        onEnter: () => away(false), onLeaveBack: () => away(true),
+        onRefresh: (self) => away(self.scroll() < self.start)
+      });
+    }
 
     /* Result table: rows in, counts up ---------------------------------- */
     const rows = qsa('[data-result-row]');
@@ -696,9 +719,71 @@
     /* Sizes that move the layout are set just before ScrollTrigger measures. Its own
        resize handling refreshes on real resizes and ignores a phone's toolbar sliding
        in and out, so nothing re-measures (and nothing jumps) in the middle of a scroll. */
-    ScrollTrigger.addEventListener('refreshInit', () => { fitWordmarks(); checkHeroHeight(); });
+    ScrollTrigger.addEventListener('refreshInit', fitWordmarks);
     ScrollTrigger.refresh();
     document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
+
+  /* ---------------------------------------------------------------------
+     Chapters. Where the colour changes (hero → story → the light chapter,
+     Example to FAQ → closing), the next one slides up over the last screen of
+     the one before. That screen holds still, sticky at its own bottom edge, so
+     the browser moves nothing, and its content sinks back and fades with the
+     scroll, the way the hero always has. A fully covered chapter is hidden.
+     --------------------------------------------------------------------- */
+
+  function initChapters() {
+    const main = qs('main');
+    const chapters = [
+      { held: qs('.hero'), next: qs('.story'), fade: [] }, // the hero's own dissolve is heroScrub
+      { held: qs('.story'), next: qs('.light-chapter'), fade: qsa('.stage-wrap, #result') },
+      { held: qs('.light-chapter'), next: qs('.closing'), fade: qsa('.vision-head, .faq-head, .faq-list') }
+    ].filter((c) => c.held && c.next);
+    const held = chapters.map((c) => c.held);
+
+    // The fade is over when the next chapter is 75% of the way up, or sooner if the page ends
+    // first: a held chapter can only hold while the page still runs on below it
+    function fadeEnd(next) {
+      const below = main.getBoundingClientRect().bottom - next.getBoundingClientRect().top;
+      return Math.round(Math.max(window.innerHeight * 0.25, window.innerHeight - below + 8));
+    }
+
+    function setHeights() {
+      const heights = held.map((el) => el.offsetHeight);
+      held.forEach((el, i) => el.style.setProperty('--hold-h', heights[i] + 'px'));
+    }
+
+    setHeights();
+    html.classList.add('holds');
+    // ScrollTrigger measures with every section in its normal place, so nothing inside a held
+    // section is measured from where it happens to be holding
+    ScrollTrigger.addEventListener('refreshInit', () => { html.classList.remove('holds'); setHeights(); });
+    ScrollTrigger.addEventListener('refresh', () => html.classList.add('holds'));
+
+    // When the page changes height (an FAQ answer opens, an Example step is longer), each section
+    // keeps holding at its true bottom and the triggers below are measured again once it settles
+    if ('ResizeObserver' in window) {
+      let timer;
+      new ResizeObserver(() => {
+        setHeights();
+        clearTimeout(timer);
+        timer = setTimeout(() => ScrollTrigger.refresh(), 300);
+      }).observe(main);
+    }
+
+    chapters.forEach(({ held: section, next, fade }) => {
+      if (fade.length) {
+        gsap.to(fade, { scale: 0.94, y: -40, opacity: 0, ease: 'none', scrollTrigger: { trigger: next, start: 'top bottom', end: () => 'top ' + fadeEnd(next) + 'px', scrub: true } });
+      }
+      // Hidden once the next chapter covers it completely, shown again on the way back up (and it
+      // stays hidden at the very end of the page, where a trigger's range would otherwise end)
+      const hide = (covered) => { section.style.visibility = covered ? 'hidden' : ''; };
+      ScrollTrigger.create({
+        trigger: next, start: 'top -64px', end: 'max',
+        onEnter: () => hide(true), onLeaveBack: () => hide(false),
+        onRefresh: (self) => hide(self.scroll() >= self.start)
+      });
+    });
   }
 
   /* ---------------------------------------------------------------------
@@ -794,7 +879,7 @@
       placed[i] = to.key;
       gsap.killTweensOf([sheet, shade]);
       if (instant) {
-        gsap.set(sheet, { yPercent: to.yPercent, y: to.y, scale: to.scale, rotation: to.rotation, opacity: to.opacity, visibility: 'visible' });
+        gsap.set(sheet, { yPercent: to.yPercent, y: to.y, scale: to.scale, rotation: to.rotation, opacity: to.opacity, visibility: 'inherit' });
         gsap.set(shade, { opacity: to.shade });
         if (changed) { if (to.role === 'off') hideDetails(i); else revealDetails(i); }
         return;
@@ -891,8 +976,9 @@
   /* The nav pill turns dark while it sits over a dark section ------------ */
   function initNavShade() {
     const nav = $('nav');
-    const darkSections = qsa('.story, .closing, .footer');
-    if (!nav || !darkSections.length) return;
+    const sections = qsa('main > section, main > .light-chapter, .footer');
+    const dark = new Set(qsa('.story, .closing, .footer'));
+    if (!nav || !sections.length) return;
     let ticking = false;
     let lastY = window.scrollY;
     let hidden = false;
@@ -900,8 +986,10 @@
       ticking = false;
       const y = window.scrollY;
       const probe = Math.min(36, nav.offsetHeight / 2);
-      const over = darkSections.some((sec) => { const r = sec.getBoundingClientRect(); return r.top <= probe && r.bottom >= probe; });
-      nav.classList.toggle('is-dark', over);
+      // A later section slides over an earlier one, so the header sits over the last one that reaches it
+      let under = null;
+      sections.forEach((sec) => { const r = sec.getBoundingClientRect(); if (r.top <= probe && r.bottom >= probe && sec.style.visibility !== 'hidden') under = sec; });
+      nav.classList.toggle('is-dark', dark.has(under));
       nav.classList.toggle('is-scrolled', y > 24);
       // Tuck the header away while reading down the page; bring it back on the way up
       const delta = y - lastY;
