@@ -5,8 +5,9 @@
  *    answer below has been checked: practice and Test B items test only the
  *    followed topic, and none repeats a Test A question).
  * 3. Motion (only under prefers-reduced-motion: no-preference): Lenis smooth
- *    scroll, GSAP + ScrollTrigger reveals, the pinned Test A → practice → Test B
- *    story, count-ups, the hero wordmark and card.
+ *    scroll, GSAP + ScrollTrigger reveals, the Test A → practice → Test B story
+ *    (scroll picks the step, each change plays on its own clock), count-ups, the
+ *    hero wordmark and card.
  */
 
 (function () {
@@ -468,15 +469,33 @@
       $('simCount').textContent = `Step ${step + 1} of ${STEPS.length} · ${st.verb}`;
       $('simTitle').textContent = st.title;
       $('simLine').textContent = st.line;
-      stage.innerHTML = RENDERERS[step](s);
+      swapStage(RENDERERS[step](s), motionOK ? direction : 0);
 
       prev.disabled = step === 0;
       next.textContent = step === STEPS.length - 1 ? '↺ Start again' : `Next: ${STEPS[step + 1].name} →`;
 
       if (motionOK && direction !== 0) {
-        gsap.from(stage.firstElementChild, { x: 22 * (direction || 1), opacity: 0, duration: 0.5, ease: 'power3.out', clearProps: 'all' });
-        gsap.from(qs('.walk-copy', root).children, { y: 10, opacity: 0, duration: 0.45, stagger: 0.05, ease: 'power3.out', clearProps: 'all' });
+        gsap.fromTo(qsa('.walk-count, .walk-copy h3, .walk-line', root), { y: 10, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.55, stagger: 0.05, ease: 'expo.out', overwrite: true, clearProps: 'transform,opacity' });
       }
+    }
+
+    // The old paper slips out while the new one slides in from the side it comes from,
+    // and the box eases to the new paper's height instead of jumping
+    function swapStage(markup, direction) {
+      gsap.killTweensOf(stage);
+      if (!direction) { stage.style.height = ''; stage.innerHTML = markup; return; }
+      const from = stage.getBoundingClientRect().height;
+      stage.style.height = '';
+      qsa('.is-leaving', stage).forEach((el) => el.remove());
+      const old = stage.firstElementChild;
+      if (old) { gsap.killTweensOf(old); old.classList.add('is-leaving'); }
+      stage.insertAdjacentHTML('beforeend', markup);
+      const card = stage.lastElementChild;
+      const to = stage.getBoundingClientRect().height;
+      if (Math.abs(to - from) > 1) gsap.fromTo(stage, { height: from }, { height: to, duration: 0.55, ease: 'expo.out', clearProps: 'height' });
+      if (old) gsap.to(old, { x: -18 * direction, opacity: 0, duration: 0.24, ease: 'power2.in', onComplete: () => old.remove() });
+      gsap.fromTo(card, { x: 28 * direction, opacity: 0 }, { x: 0, opacity: 1, duration: 0.65, ease: 'expo.out', delay: 0.06, clearProps: 'transform,opacity' });
     }
 
     function goTo(index, focusTab) {
@@ -498,9 +517,25 @@
     });
 
     radios.forEach((radio) => radio.addEventListener('click', () => {
+      if (radio.dataset.subject === subject) return;
       subject = radio.dataset.subject;
       render(1);
     }));
+
+    // Phones: swipe the paper left or right to step through the example
+    let touchX = null;
+    let touchY = 0;
+    stage.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+    stage.addEventListener('touchcancel', () => { touchX = null; }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      const dy = e.changedTouches[0].clientY - touchY;
+      touchX = null;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      const to = step + (dx < 0 ? 1 : -1);
+      if (to >= 0 && to < STEPS.length) goTo(to);
+    }, { passive: true });
 
     qs('.subject-switch', root).addEventListener('keydown', (e) => {
       const delta = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
@@ -532,12 +567,15 @@
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true });
 
-    // Smooth scroll (native on touch)
-    lenis = new Lenis({ lerp: 0.16, smoothWheel: true });
-    window.__lenis = lenis;
-    lenis.on('scroll', ScrollTrigger.update);
-    ScrollTrigger.addEventListener('refresh', () => lenis.resize());
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    // Smooth scroll for a mouse or trackpad only. Phones and tablets keep their own native scroll,
+    // and the page adds no touch listeners that would make the browser wait before it scrolls.
+    if (typeof window.Lenis !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      lenis = new Lenis({ lerp: 0.16, smoothWheel: true });
+      window.__lenis = lenis;
+      lenis.on('scroll', ScrollTrigger.update);
+      ScrollTrigger.addEventListener('refresh', () => lenis.resize());
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+    }
     gsap.ticker.lagSmoothing(0);
     if (location.hash && location.hash.length > 1) {
       requestAnimationFrame(() => scrollToHash(location.hash, true));
@@ -597,7 +635,6 @@
     load.call(() => cardLoop.play(), null, 1.4);
 
     /* Hero dissolves as the dark section slides over it ------------------ */
-    const touch = window.matchMedia('(hover: none)').matches;
     const heroScrub = gsap.timeline({
       scrollTrigger: {
         trigger: '.story', start: 'top bottom', end: 'top 15%', scrub: true,
@@ -606,7 +643,7 @@
       }
     });
     heroScrub
-      .to('.wordmark-wrap', touch ? { scale: 0.94, y: -40, opacity: 0, ease: 'none' } : { scale: 0.94, y: -40, filter: 'blur(14px)', opacity: 0, ease: 'none' }, 0)
+      .to('.wordmark-wrap', { scale: 0.94, y: -40, opacity: 0, ease: 'none' }, 0)
       .to('.hero-bottom, .hero-meta', { y: -24, opacity: 0, ease: 'none' }, 0);
 
 
@@ -621,34 +658,8 @@
       gsap.from(group.children, { y: 26, opacity: 0, duration: 0.8, stagger: 0.09, ease: 'power3.out', scrollTrigger: { trigger: group, start: 'top 86%', once: true } });
     });
 
-    /* The pinned story: Test A → practice sheet → Test B ---------------- */
-    const stageWrap = $('stageWrap');
-    const beats = qsa('.beat');
-    const sheetA = $('sheetA'); const sheetP = $('sheetP'); const sheetB = $('sheetB');
-    const fan = qs('.fan');
-
-    function setBeat(i) {
-      beats.forEach((b, j) => b.classList.toggle('is-on', j === i));
-    }
-
-    const story = gsap.timeline({
-      scrollTrigger: {
-        trigger: stageWrap, start: 'top top', end: '+=230%', pin: true, scrub: true, anticipatePin: 1,
-        onUpdate: (self) => setBeat(self.progress < 0.36 ? 0 : self.progress < 0.7 ? 1 : 2)
-      }
-    });
-    story
-      .from(fan.children, { scale: 0.7, opacity: 0, duration: 0.6, stagger: 0.04, ease: 'power2.out' }, 0)
-      .from(sheetA, { y: 60, duration: 0.8, ease: 'power2.out' }, 0)
-      .to({}, { duration: 1.2 })
-      .to(fan.children, { scale: 0.85, opacity: 0, duration: 0.5, stagger: 0.03 }, 'p')
-      .to(sheetA, { y: -40, scale: 0.96, opacity: 0, duration: 0.6, ease: 'power2.in' }, 'p')
-      .fromTo(sheetP, { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out' }, 'p+=0.25')
-      .to({}, { duration: 1.2 })
-      .to(sheetP, { y: -40, scale: 0.96, opacity: 0, duration: 0.6, ease: 'power2.in' }, 'b')
-      .fromTo(sheetB, { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power3.out' }, 'b+=0.25')
-      .from(qsa('.mark', sheetB), { scale: 0, duration: 0.4, stagger: 0.12, ease: 'back.out(2)' }, 'b+=0.8')
-      .to({}, { duration: 0.8 });
+    /* The story: Test A → practice sheet → Test B ----------------------- */
+    initStory();
 
     /* Result table: rows in, counts up ---------------------------------- */
     const rows = qsa('[data-result-row]');
@@ -682,17 +693,199 @@
     /* Footer wordmark drifts up --------------------------------------- */
     gsap.from('#footerMark', { yPercent: 30, ease: 'none', scrollTrigger: { trigger: '.footer-mark-clip', start: 'top bottom', end: 'bottom bottom', scrub: true } });
 
-    /* Triggers were created out of page order; sort so pin spacing is counted */
-    ScrollTrigger.sort();
+    /* Sizes that move the layout are set just before ScrollTrigger measures. Its own
+       resize handling refreshes on real resizes and ignores a phone's toolbar sliding
+       in and out, so nothing re-measures (and nothing jumps) in the middle of a scroll. */
+    ScrollTrigger.addEventListener('refreshInit', () => { fitWordmarks(); checkHeroHeight(); });
     ScrollTrigger.refresh();
+    document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
 
-    /* Keep sizes right on resize --------------------------------------- */
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { fitWordmarks(); checkHeroHeight(); ScrollTrigger.refresh(); }, 150);
+  /* ---------------------------------------------------------------------
+     The story. The stage is CSS-sticky inside a tall track. How far you are
+     through the track picks the step; each change then plays on its own clock:
+     the new paper lands on top of the pile and the one before settles back,
+     smaller and darker, its edge still showing. A change always finishes, never
+     stops half-way and never trails the scroll. Only transform and opacity move.
+     --------------------------------------------------------------------- */
+
+  function initStory() {
+    const track = $('stageTrack');
+    const slot = $('sheets');
+    const deck = $('deck');
+    if (!track || !deck) return;
+    const sheets = [$('sheetA'), $('sheetP'), $('sheetB')];
+    const shades = sheets.map((sheet) => qs('.sheet-shade', sheet));
+    const beats = qsa('.beat');
+    const fills = beats.map((beat) => qs('.beat-bar i', beat));
+    const fanCards = qsa('.fan i', deck);
+    const chat = qs('.wa-float');
+    const LAST = sheets.length - 1;
+    const HYSTERESIS = 0.03; // a step changes 3% past its line, so a resting scroll never flickers
+    const GATHER = [[36, 28], [-36, 28], [36, -28], [-36, -28], [0, 36], [0, -36]];
+    const FAN_OUT = { x: (i) => GATHER[i][0], y: (i) => GATHER[i][1], scale: 0.9, opacity: 0 };
+    const FAN_IN = { x: 0, y: 0, scale: 1, opacity: 1 };
+
+    // How each role moves. Every ease starts at full speed, so a change answers the scroll at once:
+    // the paper arriving on top, a paper settling into the pile, a paper lifting off (scrolling back)
+    const MOVES = {
+      top: { duration: 0.9, ease: 'expo.out', fade: 0.25 },
+      pile: { duration: 0.8, ease: 'power3.out', fade: 0.25 },
+      off: { duration: 0.45, ease: 'power2.out', fade: 0.22 }
+    };
+
+    // The small touches inside each paper. They are set up while the paper is out of sight, so the
+    // frame in which a change starts does almost no work (nothing is measured, nothing is parsed).
+    const DETAILS = [
+      { rise: qsa('.omr li', sheets[0]), pop: qsa('.omr .mark', sheets[0]), foot: qsa('.sheet-foot', sheets[0]) },
+      { rise: qsa('.topic-head, .qs li, .more li, .left-out', sheets[1]), pop: [], foot: [] },
+      { rise: qsa('.topic-head, .qs li, .more li', sheets[2]), pop: qsa('.qs .mark', sheets[2]), foot: qsa('.ab > *', sheets[2]) }
+    ].map((d) => ({ ...d, all: [...d.rise, ...d.pop, ...d.foot], hidden: false }));
+
+    let current = -1;
+    let settled = false;
+    let fanShown = null;
+    let peekPx = 14;
+    const placed = [];
+    const lastFill = [];
+
+    function hideDetails(i) {
+      const d = DETAILS[i];
+      gsap.killTweensOf(d.all);
+      gsap.set(d.rise, { y: 14, opacity: 0 });
+      gsap.set(d.pop, { scale: 0 });
+      gsap.set(d.foot, { y: 10, opacity: 0 });
+      d.hidden = true;
+    }
+
+    function playDetails(i, delay) {
+      const d = DETAILS[i];
+      if (!d.hidden) return;
+      d.hidden = false;
+      gsap.to(d.rise, { y: 0, opacity: 1, duration: 0.7, ease: 'expo.out', stagger: 0.05, delay: delay });
+      gsap.to(d.pop, { scale: 1, duration: 0.5, ease: 'back.out(2.2)', stagger: 0.1, delay: delay + 0.3 });
+      gsap.to(d.foot, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.07, delay: delay + 0.55 });
+    }
+
+    function revealDetails(i) {
+      const d = DETAILS[i];
+      if (!d.hidden) return;
+      d.hidden = false;
+      gsap.killTweensOf(d.all);
+      gsap.set(d.all, { y: 0, scale: 1, opacity: 1 });
+    }
+
+    // Where sheet i sits while `step` is showing: in the pile, on top, or waiting out of sight
+    function pose(i, step) {
+      if (i < step) {
+        const depth = step - i;
+        return { role: 'pile', key: 'pile' + depth, yPercent: 0, y: -peekPx * depth, scale: 1 - 0.05 * depth, rotation: 0, opacity: 1, shade: depth === 1 ? 0.42 : 0.66 };
+      }
+      if (i === step) return { role: 'top', key: 'top', yPercent: 0, y: 0, scale: 1, rotation: 0, opacity: 1, shade: 0 };
+      return { role: 'off', key: 'off', yPercent: 16, y: 0, scale: 1.04, rotation: 1.2, opacity: 0, shade: 0 };
+    }
+
+    function move(i, to, instant) {
+      const sheet = sheets[i];
+      const shade = shades[i];
+      const was = placed[i];
+      const changed = was !== to.key;
+      if (!changed && !instant) return;
+      placed[i] = to.key;
+      gsap.killTweensOf([sheet, shade]);
+      if (instant) {
+        gsap.set(sheet, { yPercent: to.yPercent, y: to.y, scale: to.scale, rotation: to.rotation, opacity: to.opacity, visibility: 'visible' });
+        gsap.set(shade, { opacity: to.shade });
+        if (changed) { if (to.role === 'off') hideDetails(i); else revealDetails(i); }
+        return;
+      }
+      const m = MOVES[to.role];
+      gsap.to(sheet, { yPercent: to.yPercent, y: to.y, scale: to.scale, rotation: to.rotation, duration: m.duration, ease: m.ease });
+      gsap.to(sheet, {
+        opacity: to.opacity, duration: m.fade, ease: 'power2.out',
+        // once a paper has lifted off, its details wait, ready to play on its next arrival
+        onComplete: to.role === 'off' && i > 0 ? () => hideDetails(i) : null
+      });
+      gsap.to(shade, { opacity: to.shade, duration: m.duration, ease: m.ease });
+      if (to.role === 'top' && was === 'off') playDetails(i, 0.1);
+      else if (to.role === 'pile') revealDetails(i);
+    }
+
+    function fan(visible, instant) {
+      if (fanShown === visible && !instant) return;
+      fanShown = visible;
+      gsap.killTweensOf(fanCards);
+      if (instant) { gsap.set(fanCards, visible ? FAN_IN : FAN_OUT); return; }
+      gsap.to(fanCards, visible
+        ? { ...FAN_IN, duration: 0.9, ease: 'expo.out', stagger: 0.04 }
+        : { ...FAN_OUT, duration: 0.55, ease: 'power3.out', stagger: 0.025 });
+    }
+
+    function show(step, instant) {
+      if (step === current && !instant) return;
+      current = step;
+      sheets.forEach((sheet, i) => move(i, pose(i, step), instant));
+      fan(step === 0, instant);
+      beats.forEach((beat, j) => beat.classList.toggle('is-on', j === step));
+    }
+
+    function stepAt(raw) {
+      let step = current < 0 ? Math.min(LAST, Math.floor(raw)) : current;
+      while (step < LAST && raw >= step + 1 + HYSTERESIS) step++;
+      while (step > 0 && raw < step - HYSTERESIS) step--;
+      return step;
+    }
+
+    function onProgress(progress, instant) {
+      const raw = progress * sheets.length;
+      fills.forEach((fill, j) => {
+        const f = Math.round(Math.min(1, Math.max(0, raw - j)) * 1000) / 1000;
+        if (lastFill[j] !== f) { lastFill[j] = f; fill.style.setProperty('--fill', f); }
+      });
+      show(stepAt(raw), instant);
+    }
+
+    // Measured only when ScrollTrigger refreshes (load, real resizes), never while scrolling.
+    // Phones and short windows: the pile shrinks to fit the room under the beats.
+    function measure() {
+      const peekNow = parseFloat(getComputedStyle(deck).getPropertyValue('--peek')) || 14;
+      deck.style.scale = '';
+      const room = slot.clientHeight;
+      const need = deck.offsetHeight;
+      if (room > 0 && need > room) deck.style.scale = (room / need).toFixed(3);
+      if (peekNow !== peekPx) {
+        peekPx = peekNow;
+        if (current >= 0) show(current, true);
+      }
+    }
+
+    // Test A arrives as the section comes up: answer rows rise, marks pop, the class's papers fan out
+    function intro() {
+      if (current !== 0) { revealDetails(0); return; }
+      playDetails(0, 0);
+      fan(true, false);
+    }
+
+    measure();
+    show(0, true);
+    const introPending = track.getBoundingClientRect().top > window.innerHeight * 0.85;
+    if (introPending) {
+      hideDetails(0);
+      fanShown = false;
+      gsap.set(fanCards, FAN_OUT);
+    }
+
+    ScrollTrigger.addEventListener('refreshInit', measure);
+    ScrollTrigger.create({
+      trigger: track, start: 'top top', end: 'bottom bottom',
+      onUpdate: (self) => onProgress(self.progress, false),
+      onRefresh: (self) => { onProgress(self.progress, !settled); settled = true; },
+      // On a phone the floating chat pill would sit on the paper; it steps aside while the story holds the screen
+      onToggle: (self) => { if (chat) chat.classList.toggle('is-tucked', self.isActive); }
     });
-    document.fonts && document.fonts.ready.then(() => { fitWordmarks(); ScrollTrigger.refresh(); });
+    if (introPending) {
+      ScrollTrigger.create({ trigger: track, start: 'top 85%', once: true, onEnter: intro });
+    }
   }
 
   /* The nav pill turns dark while it sits over a dark section ------------ */

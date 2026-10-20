@@ -17,7 +17,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="stylesheet" href="styles.css?v=20261020">
+  <link rel="stylesheet" href="styles.css?v=20261020c">
   <script>
     // Motion only when the visitor allows it. app.js removes the flag again if the libraries fail.
     if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches && location.search.indexOf('nomotion') === -1) {
@@ -28,7 +28,7 @@
   <script defer src="assets/vendor/gsap.min.js"></script>
   <script defer src="assets/vendor/ScrollTrigger.min.js"></script>
   <script defer src="assets/vendor/lenis.min.js"></script>
-  <script defer src="app.js?v=20261020"></script>
+  <script defer src="app.js?v=20261020c"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -131,75 +131,89 @@
         <h2>Two tests. One comparison.</h2>
       </div>
 
-      <div class="stage-wrap" id="stageWrap">
-        <div class="container stage">
-          <ol class="beats" id="beats">
-            <li class="beat is-on" data-beat="0">
-              <span class="beat-n">01</span>
-              <h3>Test A</h3>
-              <span class="who">Whole class</span>
-              <p>Same paper for the whole class. Every topic is tested, so no gap stays hidden.</p>
-            </li>
-            <li class="beat" data-beat="1">
-              <span class="beat-n">02</span>
-              <h3>Practice sheet</h3>
-              <span class="who">Each student</span>
-              <p>Made for each student. New questions on just the weak topics, at a similar level.</p>
-            </li>
-            <li class="beat" data-beat="2">
-              <span class="beat-n">03</span>
-              <h3>Test B</h3>
-              <span class="who">Each student</span>
-              <p>Made for each student. The same topics, with questions never seen before.</p>
-            </li>
-          </ol>
+      <div class="stage-track" id="stageTrack">
+        <div class="stage-wrap" id="stageWrap">
+          <div class="container stage">
+            <ol class="beats" id="beats">
+              <li class="beat is-on" data-beat="0">
+                <span class="beat-bar" aria-hidden="true"><i></i></span>
+                <span class="beat-n">01</span>
+                <h3>Test A</h3>
+                <span class="who">Whole class</span>
+                <p>Same paper for the whole class. Every topic is tested, so no gap stays hidden.</p>
+              </li>
+              <li class="beat" data-beat="1">
+                <span class="beat-bar" aria-hidden="true"><i></i></span>
+                <span class="beat-n">02</span>
+                <h3>Practice sheet</h3>
+                <span class="who">Each student</span>
+                <p>Made for each student. New questions on just the weak topics, at a similar level.</p>
+              </li>
+              <li class="beat" data-beat="2">
+                <span class="beat-bar" aria-hidden="true"><i></i></span>
+                <span class="beat-n">03</span>
+                <h3>Test B</h3>
+                <span class="who">Each student</span>
+                <p>Made for each student. The same topics, with questions never seen before.</p>
+              </li>
+            </ol>
 
-          <div class="sheets" id="sheets">
-            <div class="fan" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
+            <div class="sheets" id="sheets">
+              <div class="deck" id="deck">
+                <div class="fan" aria-hidden="true">
+                  <i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
 
-            <div class="sheet sheet-a" id="sheetA">
-              <div class="sheet-head"><strong>Test A · Quadratic equations</strong><span class="tag">Whole class</span></div>
-              <ul class="omr">
-                <li><span class="omr-q">Q11</span><span class="bubbles"><i>A</i><i class="on">B</i><i>C</i><i>D</i></span><span class="omr-c">Discriminant</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                <li><span class="omr-q">Q12</span><span class="bubbles"><i>A</i><i>B</i><i>C</i><i class="on">D</i></span><span class="omr-c">Nature of roots</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                <li class="miss"><span class="omr-q">Q13</span><span class="bubbles"><i class="on">A</i><i>B</i><i class="key">C</i><i>D</i></span><span class="omr-c">Splitting the middle term</span><span class="mark no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></li>
-                <li><span class="omr-q">Q14</span><span class="bubbles"><i class="on">A</i><i>B</i><i>C</i><i>D</i></span><span class="omr-c">Quadratic formula</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                <li class="miss"><span class="omr-q">Q15</span><span class="bubbles"><i>A</i><i class="key">B</i><i>C</i><i class="on">D</i></span><span class="omr-c">Splitting the middle term</span><span class="mark no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></li>
-              </ul>
-              <p class="sheet-foot"><span class="mark no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Missed twice: <b>Splitting the middle term</b></p>
-            </div>
+                <div class="sheet sheet-a" id="sheetA">
+                  <div class="sheet-head"><strong>Test A · Quadratic equations</strong><span class="tag">Whole class</span></div>
+                  <ul class="omr">
+                    <li><span class="omr-q">Q11</span><span class="bubbles"><i>A</i><i class="on">B</i><i>C</i><i>D</i></span><span class="omr-c">Discriminant</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li><span class="omr-q">Q12</span><span class="bubbles"><i>A</i><i>B</i><i>C</i><i class="on">D</i></span><span class="omr-c">Nature of roots</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li class="miss"><span class="omr-q">Q13</span><span class="bubbles"><i class="on">A</i><i>B</i><i class="key">C</i><i>D</i></span><span class="omr-c">Splitting the middle term</span><span class="mark no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></li>
+                    <li><span class="omr-q">Q14</span><span class="bubbles"><i class="on">A</i><i>B</i><i>C</i><i>D</i></span><span class="omr-c">Quadratic formula</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li class="miss"><span class="omr-q">Q15</span><span class="bubbles"><i>A</i><i class="key">B</i><i>C</i><i class="on">D</i></span><span class="omr-c">Splitting the middle term</span><span class="mark no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></li>
+                  </ul>
+                  <p class="sheet-foot"><span class="mark no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Missed twice: <b>Splitting the middle term</b></p>
+                  <i class="sheet-shade" aria-hidden="true"></i>
+                </div>
 
-            <div class="sheet sheet-p" id="sheetP">
-              <div class="sheet-head"><strong>Practice sheet · Aarav</strong><span class="tag">Only weak topics</span></div>
-              <div class="topic-head"><span class="topic">Splitting the middle term</span><span class="tag">4 questions · L5–7</span></div>
-              <ol class="qs">
-                <li><b>1.</b><span>3x² − 10x − 8 = 0</span></li>
-                <li><b>2.</b><span>6x² − x − 2 = 0</span></li>
-                <li><b>3.</b><span>4x² − 4x − 3 = 0</span></li>
-                <li><b>4.</b><span>2x² + x − 6 = 0</span></li>
-              </ol>
-              <ul class="more">
-                <li><span>+ Quadratic formula</span><span>4 questions</span></li>
-                <li><span>+ Word problems</span><span>4 questions</span></li>
-              </ul>
-              <div class="left-out"><span>Left out</span><ul><li>Q13, Q15 from Test A</li><li>Topics Aarav already knows</li></ul></div>
-            </div>
+                <div class="sheet sheet-p" id="sheetP">
+                  <div class="sheet-head"><strong>Practice sheet · Aarav</strong><span class="tag">Only weak topics</span></div>
+                  <div class="topic-head"><span class="topic">Splitting the middle term</span><span class="tag">4 questions · L5–7</span></div>
+                  <ol class="qs">
+                    <li><b>1.</b><span>3x² − 10x − 8 = 0</span></li>
+                    <li><b>2.</b><span>6x² − x − 2 = 0</span></li>
+                    <li><b>3.</b><span>4x² − 4x − 3 = 0</span></li>
+                    <li><b>4.</b><span>2x² + x − 6 = 0</span></li>
+                  </ol>
+                  <ul class="more">
+                    <li><span>+ Quadratic formula</span><span>4 questions</span></li>
+                    <li><span>+ Word problems</span><span>4 questions</span></li>
+                  </ul>
+                  <div class="left-out"><span>Left out</span><ul><li>Q13, Q15 from Test A</li><li>Topics Aarav already knows</li></ul></div>
+                  <i class="sheet-shade" aria-hidden="true"></i>
+                </div>
 
-            <div class="sheet sheet-b" id="sheetB">
-              <div class="sheet-head"><strong>Test B · Aarav</strong><span class="tag">Never-seen questions</span></div>
-              <div class="topic-head"><span class="topic">Splitting the middle term</span><span class="tag">3 questions</span></div>
-              <ol class="qs ticked">
-                <li><b>1.</b><span>5x² − 13x − 6 = 0</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                <li><b>2.</b><span>2x² − 7x − 15 = 0</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-                <li><b>3.</b><span>3x² + 5x − 2 = 0</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
-              </ol>
-              <div class="ab">
-                <div class="ab-col"><span class="ab-label">Test A</span><b class="ab-score red">0/2</b></div>
-                <svg class="ab-arrow" viewBox="0 0 44 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h38M34 2l6 6-6 6"/></svg>
-                <div class="ab-col"><span class="ab-label">Test B</span><b class="ab-score green">3/3</b></div>
-                <span class="pill pill-up">Improved</span>
+                <div class="sheet sheet-b" id="sheetB">
+                  <div class="sheet-head"><strong>Test B · Aarav</strong><span class="tag">Never-seen questions</span></div>
+                  <div class="topic-head"><span class="topic">Splitting the middle term</span><span class="tag">3 questions</span></div>
+                  <ol class="qs ticked">
+                    <li><b>1.</b><span>5x² − 13x − 6 = 0</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li><b>2.</b><span>2x² − 7x − 15 = 0</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                    <li><b>3.</b><span>3x² + 5x − 2 = 0</span><span class="mark ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></li>
+                  </ol>
+                  <ul class="more">
+                    <li><span>+ Quadratic formula</span><span>3 questions</span></li>
+                    <li><span>+ Word problems</span><span>3 questions</span></li>
+                  </ul>
+                  <div class="ab">
+                    <div class="ab-col"><span class="ab-label">Test A</span><b class="ab-score red">0/2</b></div>
+                    <svg class="ab-arrow" viewBox="0 0 44 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h38M34 2l6 6-6 6"/></svg>
+                    <div class="ab-col"><span class="ab-label">Test B</span><b class="ab-score green">3/3</b></div>
+                    <span class="pill pill-up">Improved</span>
+                  </div>
+                  <i class="sheet-shade" aria-hidden="true"></i>
+                </div>
               </div>
             </div>
           </div>

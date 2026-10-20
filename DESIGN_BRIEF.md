@@ -50,19 +50,29 @@ Scale: wordmark `clamp(72px, 19.5vw, 300px)`; h1 `clamp(34px, 5vw, 64px)`; h2
 
 ## 3. Motion system
 
-* Lenis smooth scroll (lerp 0.16, desktop pointer only; native on touch), GSAP 3.15 + ScrollTrigger,
-  vendored in `assets/vendor/`. Every scrubbed sequence uses `scrub: true`, so the pinned slides and the
-  hero dissolve sit exactly on the scroll position with no catch-up lag; moving layers carry
-  `will-change`, and the hero blur is skipped on touch devices.
+* Lenis smooth scroll (lerp 0.16) for a mouse or trackpad only (`(hover: hover) and (pointer: fine)`);
+  phones and tablets keep their native scroll and the page adds no touch listeners that would make the
+  browser wait before scrolling. GSAP 3.15 + ScrollTrigger, vendored in `assets/vendor/`.
+* Content that changes (the story's papers, the Example's steps) is never glued to the scroll
+  (owner, 20 Oct 2026: scrubbed slides felt laggy with smoothing and worse without it). Scroll or a
+  click only picks the step; each change then plays on its own clock, always finishes, and every ease
+  starts at full speed, so it answers the scroll at once. Only continuous decoration may be scrubbed:
+  the hero dissolve, the footer wordmark drift and the story's progress bars (`scrub: true`).
 * Motion runs only when `prefers-reduced-motion: no-preference` (the inline script adds `html.motion`;
   `?nomotion=1` forces the static page for testing). Reduced motion = static page, every element
   visible, the story's three sheets stacked, FAQ still works.
 * Reveals: `y: 28 → 0`, `opacity 0 → 1`, `0.9s`, `power3.out`, once. Groups stagger `0.08s`.
 * Count-ups: integers only, `1.1s`, snap to whole numbers (0/2 → 3/3, 4, 10, 4).
-* Only `transform`, `opacity` and (hero wordmark only) `filter` animate. Pinned stages use
-  ScrollTrigger pin; `ScrollTrigger.config({ ignoreMobileResize: true })`.
-* Budget: 60 fps on a mid-range Android. No blur on anything but the hero wordmark; no
-  animated box-shadows; no per-frame layout.
+* Only `transform` and `opacity` animate; nothing animates a `filter`. No JavaScript pins: the story
+  stage is CSS `position: sticky` inside a tall track, so the browser holds it in place (no jump on a
+  phone, no layout shift: CLS while scrolling the page 0.006 desktop / 0.0004 phone, against 1.42 / 1.77
+  with the old ScrollTrigger pin). `ScrollTrigger.config({ ignoreMobileResize: true })`; sizes that move
+  the layout are set in ScrollTrigger's `refreshInit`, never while scrolling.
+* The frame in which a change starts does almost no work: the details inside each paper are set up
+  while it is out of sight, nothing is measured, nothing is parsed.
+* Budget: 60 fps on a mid-range Android. Measured with a scripted scroll (wheel on desktop, touch flicks
+  on a 4x-slowed phone profile): no frame over 20 ms at a step change. No blur; no animated
+  box-shadows; no per-frame layout.
 
 ## 4. Storyboard
 
@@ -90,7 +100,7 @@ Motion: load — wordmark letters rise with a 0.04s stagger, card lifts in, h1 w
 and buttons fade. Card then plays: Test A dots fill red with crosses, the arrow draws, Test B
 dots fill green one by one, 3/3 counts up, pill flips "Weak" → "Improved"; repeats every 7 s.
 Scroll — hero is sticky; the dark section slides up over it with rounded top corners while the
-wordmark and card blur (0 → 14px), scale to 0.94 and fade out over the first 80% of a viewport.
+wordmark and card scale to 0.94 and fade out over the first 80% of a viewport (no blur).
 
 ### 2 · Test A & B (`#tests`, dark, pinned)
 One idea: the same weak topic, three beats.
@@ -103,9 +113,17 @@ Stage: one sheet that changes with scroll. Beat 1: Test A answer rows Q11–Q15 
 rows red (Splitting the middle term, missed twice). Beat 2: the practice sheet — the topic with
 four new questions; "Left out: Q13, Q15 from Test A · topics Aarav already knows". Beat 3:
 Test B — three never-seen questions tick green; 0/2 → 3/3.
-Motion: stage pinned for three viewports; a scrubbed timeline dims and brightens the beats
-on the left and swaps the sheet on the right (slide + fade, no blur). Mobile: beats stack
-above the sheet.
+Motion: the stage is CSS-sticky inside a 320svh track; how far you are through the track picks
+the beat (a step changes 3% past its line, so a resting scroll never flickers). The three papers
+are the same size and form a pile: the new paper lands on top (from 16% lower, scale 1.04, tilt
+1.2°, 0.9s `expo.out`, opacity in 0.25s), the one before settles back (5% smaller per level, its
+top edge showing 14px, 10px on phones, darkened 42% / 66%, 0.8s `power3.out`). Scrolling back
+lifts the top paper off (0.45s `power2.out`). Inside a paper that arrives: rows rise, Test B's
+ticks pop, then the 0/2 → 3/3 line. The whole class's papers fan out behind Test A and gather
+away for the student's own sheets. Each beat carries a thin progress bar that follows the scroll
+1:1. Phones: the beats become a three-part bar strip above the pile (name and who, the active
+line below), the pile shrinks to fit short screens, and the floating chat pill steps aside while
+the story holds the screen.
 
 ### 3 · The result (still `#tests`, dark)
 One idea: topic by topic, real counts.
@@ -125,8 +143,10 @@ one-line descriptions from the old `app.js`, unchanged in meaning; subject tabs 
 Physics · Chemistry · Biology; the example-student line.
 Device: the walkthrough (rail of 5 steps, Back / Next, subject radio group, the rendered
 paper for each step). All worked questions and numbers are the old site's.
-Motion: section reveal; on each step change the paper slides in (`x: 24 → 0`, fade) and the
-rail dot fills; keyboard behaviour unchanged (arrows, Home, End).
+Motion: section reveal; on each step change the old paper slips out (`x: −18`, fade, 0.24s)
+while the new one slides in from its side (`x: 28 → 0`, 0.65s `expo.out`), and the box eases to
+the new paper's height (0.55s) instead of jumping; the step text rises, the buttons stay still.
+Phones: swipe the paper left or right to step. Keyboard behaviour unchanged (arrows, Home, End).
 
 ### 5 · Parent portal (`#portal`, light)
 One idea: every chapter's progress in one place.
